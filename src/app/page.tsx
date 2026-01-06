@@ -7,6 +7,7 @@ import { HeroSection } from './_components/HeroSection';
 import { FeaturesSection } from './_components/FeaturesSection';
 import { CancellationSection } from './_components/CancellationSection';
 import { Footer } from './_components/Footer';
+import BookingSystem from './book-appointment/_components/Stepper';
 
 const LandingPage = () => {
 	return (
@@ -31,16 +32,13 @@ const LandingPage = () => {
 						transition={{ duration: 0.6 }}
 						className="text-center mb-12"
 					>
-						<span className="inline-block px-4 py-2 bg-primary/10 text-primary text-sm font-medium rounded-full mb-4">
+						{/* <span className="inline-block px-4 py-2 bg-primary/10 text-primary text-sm font-medium rounded-full mb-4">
 							Book Your Visit
-						</span>
-						<h2 className="text-3xl md:text-5xl font-bold text-foreground mb-4">
+						</span> */}
+						{/* <h2 className="text-3xl md:text-5xl font-bold text-foreground mb-4">
 							Schedule Your Appointment
-						</h2>
-						<p className="text-lg text-muted-foreground mx-auto">
-							Follow our simple 5-step process to book your dental appointment.
-							Select your preferred date, location, and time.
-						</p>
+						</h2> */}
+
 					</motion.div>
 
 					{/* Stepper Component */}
@@ -52,7 +50,7 @@ const LandingPage = () => {
 						className="w-full max-w-7xl mx-auto"
 					>
 						<div className="w-full bg-card rounded-3xl shadow-xl border border-border/50 overflow-hidden">
-							<DentalBookingSystem />
+							<BookingSystem />
 						</div>
 					</motion.div>
 				</div>

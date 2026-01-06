@@ -16,10 +16,10 @@ const page = () => {
 				<div
 					className="flex flex-col text-start  justify-start
 				items-start gap-4  p-4">
-					<h1 className="md:text-7xl text-4xl font-bold">
+					<h1 className="md:text-7xl text-4xl font-bold text-stormy-teal">
 						Book with{' '}
 					</h1>
-					<h1 className="md:text-5xl text-2xl font-semibold">
+					<h1 className="md:text-5xl text-2xl font-semibold text-pacific-blue">
 						Your Dentist
 					</h1>
 
@@ -49,7 +49,7 @@ const page = () => {
 						</li>
 					</ul>
 					<div className="flex flex-col gap-4">
-						<h2 className="text-xl font-bold  ">
+						<h2 className="text-xl font-bold text-stormy-teal">
 							Cancel Your Appointment
 						</h2>
 						<ul className="list-disc  text-gray-700 flex flex-col gap-2 ">

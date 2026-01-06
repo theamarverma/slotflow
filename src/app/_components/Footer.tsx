@@ -36,7 +36,7 @@ export const Footer: React.FC = () => {
                         className="lg:col-span-1"
                     >
                         <h3 className="text-2xl font-bold text-foreground mb-3">
-                            <span className="bg-gradient-to-r from-primary to-cyan bg-clip-text text-transparent">
+                            <span className="text-stormy-teal">
                                 SlotFlow
                             </span>
                         </h3>
@@ -97,7 +97,7 @@ export const Footer: React.FC = () => {
                                 <Clock className="w-4 h-4 mt-0.5 flex-shrink-0" />
                                 <div>
                                     <p>{locations[1]!.hours}</p>
-                                    <p className="text-cyan dark:text-cyan text-xs mt-1">
+                                    <p className="text-pacific-blue dark:text-pacific-blue text-xs mt-1">
                                         {locations[1]!.note}
                                     </p>
                                 </div>

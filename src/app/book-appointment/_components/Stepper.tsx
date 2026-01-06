@@ -88,7 +88,7 @@ const stepInfo = [
 	{ icon: Check, label: 'Confirm', description: 'Review & book' },
 ];
 
-const DentalBookingSystem: React.FC = () => {
+const BookingSystem: React.FC = () => {
 	const [selectedDate, setSelectedDate] = useState<string>('');
 	const [selectedLocation, setSelectedLocation] = useState<string>('');
 	const [selectedTime, setSelectedTime] = useState<string>('');
@@ -535,7 +535,7 @@ const DentalBookingSystem: React.FC = () => {
 								{stepNum < 5 && (
 									<div className="w-8 md:w-16 h-1 mx-1 rounded-full overflow-hidden bg-muted">
 										<motion.div
-											className="h-full bg-gradient-to-r from-green-500 to-primary"
+											className="h-full bg-gradient-to-r from-stormy-teal to-pacific-blue"
 											initial={{ width: '0%' }}
 											animate={{ width: isCompleted ? '100%' : '0%' }}
 											transition={{ duration: 0.5, ease: 'easeInOut' }}
@@ -641,7 +641,7 @@ const DentalBookingSystem: React.FC = () => {
 																${isSelected
 																	? 'bg-primary text-primary-foreground shadow-lg shadow-primary/30 hover:bg-primary'
 																	: day.isToday && !isSelected
-																		? 'ring-2 ring-primary bg-primary/10'
+																		? 'ring-2 ring-stormy-teal bg-stormy-teal/10'
 																		: 'hover:bg-muted'
 																}
 															`}
@@ -658,7 +658,7 @@ const DentalBookingSystem: React.FC = () => {
 										<motion.div
 											initial={{ opacity: 0, y: 10 }}
 											animate={{ opacity: 1, y: 0 }}
-											className="mt-4 p-4  mx-auto bg-primary/5 rounded-xl border border-primary/20"
+											className="p-4 mt-4!  mx-auto bg-primary/5 rounded-xl border border-primary/20"
 										>
 											<p className="text-sm text-primary font-medium flex items-center gap-2">
 												<CheckCircle2 className="w-4 h-4" />
@@ -1106,7 +1106,7 @@ const DentalBookingSystem: React.FC = () => {
 					variant="outline"
 					onClick={handleBack}
 					disabled={currentStep === 1}
-					className="h-12 px-6 rounded-xl font-medium transition-all hover:bg-muted"
+					className="h-12 px-6 rounded-xl font-medium"
 				>
 					<ArrowLeft className="w-4 h-4 mr-2" />
 					Back
@@ -1114,9 +1114,10 @@ const DentalBookingSystem: React.FC = () => {
 
 				{currentStep < 5 ? (
 					<Button
+						variant="default"
 						onClick={handleNext}
 						disabled={!isStepValid(currentStep)}
-						className="h-12 px-8 rounded-xl font-medium bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-lg shadow-primary/30 transition-all"
+						className="h-12 px-8 rounded-xl font-medium"
 					>
 						Next
 						<ArrowRight className="w-4 h-4 ml-2" />
@@ -1129,9 +1130,10 @@ const DentalBookingSystem: React.FC = () => {
 							strategy="afterInteractive"
 						/>
 						<Button
+							variant="secondary"
 							onClick={handleBooking}
 							disabled={isLoading}
-							className="h-12 px-8 rounded-xl font-medium bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 shadow-lg shadow-green-500/30 transition-all"
+							className="h-12 px-8 rounded-xl font-medium"
 						>
 							{isLoading ? (
 								<span className="flex items-center gap-2">
@@ -1162,4 +1164,4 @@ const DentalBookingSystem: React.FC = () => {
 	);
 };
 
-export default DentalBookingSystem;
+export default BookingSystem;

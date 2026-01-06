@@ -19,9 +19,9 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onBookNowClick }) => {
     };
 
     return (
-        <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden">
+        <section className="relative min-h-[100vh] flex items-center justify-center overflow-hidden">
             {/* Animated gradient background */}
-            <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-cyan-50 to-white dark:from-blue-950 dark:via-cyan-950 dark:to-background" />
+            <div className="absolute inset-0 bg-gradient-to-br from-[#16697a]/10 via-[#489fb5]/5 to-white dark:from-[#16697a]/20 dark:via-[#489fb5]/10 dark:to-background" />
 
             {/* Decorative floating elements */}
             <motion.div
@@ -37,7 +37,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onBookNowClick }) => {
                 }}
             />
             <motion.div
-                className="absolute bottom-20 right-10 w-96 h-96 bg-primary/10 rounded-full blur-3xl"
+                className="absolute bottom-20 right-10 w-96 h-96 bg-pacific-blue/10 rounded-full blur-3xl"
                 animate={{
                     y: [0, 20, 0],
                     scale: [1, 1.05, 1],
@@ -50,35 +50,35 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onBookNowClick }) => {
             />
 
             {/* Content */}
-            <div className="relative z-10 container mx-auto px-6 text-center">
+            <div className="relative z-10 flex flex-col gap-4 container mx-auto px-6 text-center">
                 <motion.div
                     initial={{ opacity: 0, y: 30 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.8, ease: 'easeOut' }}
                     className="flex items-center justify-center gap-2 mb-6"
                 >
-                    <Sparkles className="w-5 h-5 text-cyan" />
-                    <span className="text-sm font-medium text-cyan uppercase tracking-wider">
-                        Your Smile, Our Priority
+                    <Sparkles className="w-5 h-5 text-stormy-teal" />
+                    <span className="text-sm font-medium text-stormy-teal uppercase tracking-wider">
+                        Scheduling, simplified
                     </span>
-                    <Sparkles className="w-5 h-5 text-cyan" />
+                    <Sparkles className="w-5 h-5 text-stormy-teal" />
                 </motion.div>
 
                 <motion.h1
                     initial={{ opacity: 0, y: 40 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.8, delay: 0.1, ease: 'easeOut' }}
-                    className="text-5xl md:text-7xl font-bold text-foreground mb-4"
+                    className="text-5xl md:text-7xl font-bold text-stormy-teal mb-4"
                 >
-                    Book Your
+                    Schedule Your
                 </motion.h1>
                 <motion.h1
                     initial={{ opacity: 0, y: 40 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.8, delay: 0.2, ease: 'easeOut' }}
-                    className="text-4xl md:text-6xl font-bold bg-gradient-to-r from-primary via-cyan to-primary bg-clip-text text-transparent mb-8"
+                    className="text-4xl md:text-6xl font-bold text-pacific-blue mb-8"
                 >
-                    Dental Appointment
+                    Appointment Effortlessly
                 </motion.h1>
 
                 <motion.p
@@ -88,7 +88,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onBookNowClick }) => {
                     className="text-lg md:text-xl text-muted-foreground  mx-auto mb-10"
                 >
                     Quick and easy scheduling in just a few steps. Choose your preferred
-                    location, date, and time for a brighter smile.
+                    location, date, and time for a appointment.
                 </motion.p>
 
                 <motion.div
@@ -99,8 +99,9 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onBookNowClick }) => {
                 >
                     <Button
                         size="lg"
+                        variant="shimmer"
                         onClick={scrollToBooking}
-                        className="group relative px-8 py-6 text-lg font-semibold bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 btn-shimmer"
+                        className="group relative px-8 py-6 text-lg font-semibold rounded-xl"
                     >
                         <Calendar className="w-5 h-5 mr-2 group-hover:scale-110 transition-transform" />
                         Book Now
@@ -123,7 +124,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onBookNowClick }) => {
                     initial={{ opacity: 0, y: 30 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.8, delay: 0.6, ease: 'easeOut' }}
-                    className="mt-16 grid grid-cols-2 md:grid-cols-4  mx-auto"
+                    className="mt-16 grid grid-cols-2 md:grid-cols-4 pt-4 mx-auto"
                 >
                     {[
                         { value: '2', label: 'Locations' },

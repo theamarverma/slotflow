@@ -57,7 +57,7 @@ export const FeaturesSection: React.FC = () => {
             id="features-section"
             className="py-20 md:py-28 bg-gradient-to-b from-background to-muted/30"
         >
-            <div className="container mx-auto px-6">
+            <div className="container mx-auto flex flex-col gap-10 px-6">
                 {/* Section Header */}
                 <motion.div
                     initial={{ opacity: 0, y: 30 }}
@@ -69,10 +69,10 @@ export const FeaturesSection: React.FC = () => {
                     <span className="inline-block px-4 py-2 bg-primary/10 text-primary text-sm font-medium rounded-full mb-4">
                         Why Choose Us
                     </span>
-                    <h2 className="text-3xl md:text-5xl font-bold text-foreground mb-4">
+                    <h2 className="text-3xl md:text-5xl font-bold pt-8 text-foreground mb-4">
                         Everything You Need for
                         <br />
-                        <span className="bg-gradient-to-r from-primary to-cyan bg-clip-text text-transparent">
+                        <span className="text-stormy-teal">
                             {' '}
                             Hassle-Free Booking
                         </span>
