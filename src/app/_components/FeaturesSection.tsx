@@ -77,7 +77,7 @@ export const FeaturesSection: React.FC = () => {
                             Hassle-Free Booking
                         </span>
                     </h2>
-                    <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+                    <p className="text-lg text-muted-foreground  mx-auto">
                         We've designed our booking system to make scheduling your dental
                         appointment as simple and stress-free as possible.
                     </p>

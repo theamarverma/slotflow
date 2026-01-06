@@ -207,10 +207,10 @@ export const CancellationSection: React.FC = () => {
                         <p className="text-center text-sm text-muted-foreground mt-6">
                             Need help? Contact us at{' '}
                             <a
-                                href="mailto:support@32smile.com"
+                                href="mailto:support@slotflow.com"
                                 className="text-primary hover:underline"
                             >
-                                support@32smile.com
+                                support@slotflow.com
                             </a>
                         </p>
                     </motion.div>

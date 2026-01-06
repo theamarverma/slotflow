@@ -2,7 +2,7 @@ import { http } from '@/httpClient/httpClient';
 
 export type VerifyResponse = {
 	status: number;
-	data?: { message?: string; position?: string; [k: string]: any };
+	data?: { message?: string; position?: string;[k: string]: any };
 };
 
 let scriptPromise: Promise<boolean> | null = null;
@@ -34,7 +34,7 @@ export async function openRazorpayCheckout({
 	bookingId,
 	position,
 	amountPaise = 50000,
-	name = '32 Smile',
+	name = 'SlotFlow',
 	description = 'Test Transaction',
 	image,
 }: OpenArgs): Promise<VerifyResponse> {

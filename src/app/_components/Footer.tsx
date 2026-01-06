@@ -37,7 +37,7 @@ export const Footer: React.FC = () => {
                     >
                         <h3 className="text-2xl font-bold text-foreground mb-3">
                             <span className="bg-gradient-to-r from-primary to-cyan bg-clip-text text-transparent">
-                                32 Smile
+                                SlotFlow
                             </span>
                         </h3>
                         <p className="text-muted-foreground mb-4">
@@ -47,10 +47,10 @@ export const Footer: React.FC = () => {
                         <div className="flex items-center gap-2 text-muted-foreground">
                             <Mail className="w-4 h-4" />
                             <a
-                                href="mailto:info@32smile.com"
+                                href="mailto:info@slotflow.com"
                                 className="hover:text-primary transition-colors"
                             >
-                                info@32smile.com
+                                info@slotflow.com
                             </a>
                         </div>
                     </motion.div>
@@ -143,7 +143,7 @@ export const Footer: React.FC = () => {
                     transition={{ duration: 0.5, delay: 0.4 }}
                     className="flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-muted-foreground"
                 >
-                    <p>© {currentYear} 32 Smile. All rights reserved.</p>
+                    <p>© {currentYear} SlotFlow. All rights reserved.</p>
                     <div className="flex gap-6">
                         <a href="#" className="hover:text-primary transition-colors">
                             Privacy Policy

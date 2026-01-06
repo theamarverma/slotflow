@@ -5,7 +5,7 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 export const metadata: Metadata = {
-	title: '32 Smile',
+	title: 'SlotFlow',
 	description: 'Let Us Brighten Your Smile',
 	icons: [{ rel: 'icon', url: '/favicon.ico' }],
 };

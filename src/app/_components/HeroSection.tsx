@@ -85,7 +85,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onBookNowClick }) => {
                     initial={{ opacity: 0, y: 30 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.8, delay: 0.3, ease: 'easeOut' }}
-                    className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-10"
+                    className="text-lg md:text-xl text-muted-foreground  mx-auto mb-10"
                 >
                     Quick and easy scheduling in just a few steps. Choose your preferred
                     location, date, and time for a brighter smile.
@@ -123,7 +123,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onBookNowClick }) => {
                     initial={{ opacity: 0, y: 30 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.8, delay: 0.6, ease: 'easeOut' }}
-                    className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-8 max-w-3xl mx-auto"
+                    className="mt-16 grid grid-cols-2 md:grid-cols-4  mx-auto"
                 >
                     {[
                         { value: '2', label: 'Locations' },

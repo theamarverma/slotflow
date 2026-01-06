@@ -2,6 +2,7 @@
 
 import React, { useState, useMemo } from 'react';
 import type { XiorResponse } from 'xior';
+import { motion, AnimatePresence } from 'motion/react';
 import {
 	Calendar,
 	MapPin,
@@ -14,6 +15,11 @@ import {
 	User,
 	ArrowLeft,
 	ArrowRight,
+	Sparkles,
+	Sun,
+	Moon,
+	AlertCircle,
+	CheckCircle2,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -26,26 +32,13 @@ import {
 	CardHeader,
 	CardTitle,
 } from '@/components/ui/card';
-import {
-	Select,
-	SelectContent,
-	SelectItem,
-	SelectTrigger,
-	SelectValue,
-} from '@/components/ui/select';
 import { http } from '@/httpClient/httpClient';
-import { FaSpinner } from 'react-icons/fa';
-import { toWords } from 'number-to-words';
-import { toast } from 'react-toastify';
+
 import { BookingModal } from './BookingModal';
-import { redirect } from 'next/dist/server/api-utils';
 import Script from 'next/script';
-import { resolve } from 'path';
-import { escape } from 'querystring';
 import ClassicLoader from './ClassicLoader';
 import { useRazorpay } from '@/hooks/useRazorpay';
 
-import Image from 'next/image';
 import Swal from 'sweetalert2';
 
 interface Location {
@@ -65,7 +58,7 @@ interface CalendarDay {
 	dayName: string;
 }
 
-export interface ApiResponse<T = any> extends XiorResponse<T> {}
+export interface ApiResponse<T = any> extends XiorResponse<T> { }
 
 interface BookingResponse {
 	bookingId: string;
@@ -74,7 +67,7 @@ interface BookingResponse {
 }
 
 interface BookingSearchResponse {
-	booking?: any; // Replace 'any' with the actual type of your booking data
+	booking?: any;
 	[key: string]: any;
 }
 
@@ -87,13 +80,20 @@ interface FormData {
 	message: string;
 }
 
+const stepInfo = [
+	{ icon: Calendar, label: 'Date', description: 'Pick a date' },
+	{ icon: MapPin, label: 'Location', description: 'Select branch' },
+	{ icon: Clock, label: 'Time', description: 'Choose slot' },
+	{ icon: User, label: 'Details', description: 'Your info' },
+	{ icon: Check, label: 'Confirm', description: 'Review & book' },
+];
+
 const DentalBookingSystem: React.FC = () => {
 	const [selectedDate, setSelectedDate] = useState<string>('');
 	const [selectedLocation, setSelectedLocation] = useState<string>('');
 	const [selectedTime, setSelectedTime] = useState<string>('');
 	const [locationSearch, setLocationSearch] = useState<string>('');
-	const [showLocationDropdown, setShowLocationDropdown] =
-		useState<boolean>(false);
+	const [showLocationDropdown, setShowLocationDropdown] = useState<boolean>(false);
 	const [currentStep, setCurrentStep] = useState<number>(1);
 	const [isLoading, setIsLoading] = useState<boolean>(false);
 	const { pay, loading } = useRazorpay();
@@ -109,10 +109,8 @@ const DentalBookingSystem: React.FC = () => {
 	const [modalOpen, setModalOpen] = useState(false);
 	const [previousBooking, setPreviousBooking] = useState<any>(null);
 	const [nextBooking, setNextBooking] = useState<any>(null);
-	// Calendar state - Set to August 2025
-	const [currentMonth, setCurrentMonth] = useState<Date>(
-		new Date(Date.now())
-	);
+	const [currentMonth, setCurrentMonth] = useState<Date>(new Date(Date.now()));
+	const [direction, setDirection] = useState<number>(0);
 
 	// extracting day from selected date
 	const dayOfWeek = selectedDate ? new Date(selectedDate).getDay() : null;
@@ -120,98 +118,46 @@ const DentalBookingSystem: React.FC = () => {
 	// Chamber 1 slots
 	const SunToFriMorning = ['11:00', '11:30', '12:00', '12:30', '13:00'];
 	const MonToFriEvening = ['19:00', '19:30', '20:00', '20:30', '21:00'];
-	// Saturday closed
 
 	// Chamber 2 slots
-	const monAndWedAfternoon = [
-		'12:00',
-		'12:30',
-		'13:00',
-		'13:30',
-		'14:00',
-		'14:30',
-	];
+	const monAndWedAfternoon = ['12:00', '12:30', '13:00', '13:30', '14:00', '14:30'];
 	const tueThufriSatEvening = ['17:30', '18:00', '18:30', '19:00', '19:30'];
 
-	// 2) Helpers
 	const toHour = (t: string) => parseInt(t.slice(0, 2), 10);
 
 	let rawTimes: string[] = [];
 	if (selectedLocation === '1') {
-		// Chamber 1
 		if (dayOfWeek === null) {
 			rawTimes = [];
 		} else if (dayOfWeek === 6) {
-			// Saturday closed
 			rawTimes = [];
 		} else if (dayOfWeek === 0) {
-			// Sunday: morning only (as per your SunToFriMorning definition includes Sun)
 			rawTimes = [...SunToFriMorning];
 		} else {
-			// Mon–Fri: morning + evening
 			rawTimes = [...SunToFriMorning, ...MonToFriEvening];
 		}
 	} else if (selectedLocation === '2') {
-		// Chamber 2
 		if (dayOfWeek === null) {
 			rawTimes = [];
 		} else if (dayOfWeek === 0) {
-			// Sunday appointment only (no slots)
 			rawTimes = [];
 		} else if (dayOfWeek === 1 || dayOfWeek === 3) {
-			// Mon/Wed afternoon
 			rawTimes = [...monAndWedAfternoon];
-		} else if (
-			dayOfWeek === 2 ||
-			dayOfWeek === 4 ||
-			dayOfWeek === 5 ||
-			dayOfWeek === 6
-		) {
-			// Tue/Thu/Fri/Sat evening
+		} else if (dayOfWeek === 2 || dayOfWeek === 4 || dayOfWeek === 5 || dayOfWeek === 6) {
 			rawTimes = [...tueThufriSatEvening];
 		}
 	}
 
-	const morningTimes = rawTimes
-		.filter((t) => {
-			const h = toHour(t);
-			return h >= 10 && h <= 13;
-		})
-		.sort();
+	const morningTimes = rawTimes.filter((t) => {
+		const h = toHour(t);
+		return h >= 10 && h <= 13;
+	}).sort();
 
-	// Evening: 17–21 inclusive (covers 17:30, 18:00, 19:30, 20:30, 21:00, etc.)
-	const eveningTimes = rawTimes
-		.filter((t) => {
-			const h = toHour(t);
-			return h >= 17 && h <= 21;
-		})
-		.sort();
+	const eveningTimes = rawTimes.filter((t) => {
+		const h = toHour(t);
+		return h >= 17 && h <= 21;
+	}).sort();
 
-	// CHAMBER 1
-	const chamber1Slots =
-		dayOfWeek === null
-			? []
-			: dayOfWeek === 6
-			? []
-			: dayOfWeek === 0
-			? SunToFriMorning
-			: [...SunToFriMorning, ...MonToFriEvening];
-
-	// CHAMBER 2
-	const chamber2Slots =
-		dayOfWeek === null
-			? []
-			: dayOfWeek === 0
-			? []
-			: dayOfWeek === 1 || dayOfWeek === 3
-			? monAndWedAfternoon
-			: dayOfWeek === 2 || dayOfWeek === 4 || dayOfWeek === 5
-			? tueThufriSatEvening
-			: dayOfWeek === 6
-			? tueThufriSatEvening
-			: [];
-
-	// Mock data for locations
 	const locations: Location[] = [
 		{
 			id: '1',
@@ -225,7 +171,6 @@ const DentalBookingSystem: React.FC = () => {
 		},
 	];
 
-	// Generate calendar data
 	const generateCalendar = (date: Date): CalendarDay[] => {
 		const year = date.getFullYear();
 		const month = date.getMonth();
@@ -246,10 +191,7 @@ const DentalBookingSystem: React.FC = () => {
 
 			const dateValue = `${currentDate.getFullYear()}-${String(
 				currentDate.getMonth() + 1
-			).padStart(2, '0')}-${String(currentDate.getDate()).padStart(
-				2,
-				'0'
-			)}`;
+			).padStart(2, '0')}-${String(currentDate.getDate()).padStart(2, '0')}`;
 
 			days.push({
 				date: new Date(currentDate),
@@ -281,28 +223,19 @@ const DentalBookingSystem: React.FC = () => {
 	});
 
 	const goToPreviousMonth = (): void => {
-		setCurrentMonth(
-			new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1)
-		);
+		setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1));
 	};
 
 	const goToNextMonth = (): void => {
-		setCurrentMonth(
-			new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1)
-		);
+		setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1));
 	};
 
-	// Filter locations based on search
 	const filteredLocations = useMemo(() => {
 		if (!locationSearch) return locations;
 		return locations.filter(
 			(location) =>
-				location.name
-					.toLowerCase()
-					.includes(locationSearch.toLowerCase()) ||
-				location.address
-					.toLowerCase()
-					.includes(locationSearch.toLowerCase())
+				location.name.toLowerCase().includes(locationSearch.toLowerCase()) ||
+				location.address.toLowerCase().includes(locationSearch.toLowerCase())
 		);
 	}, [locationSearch]);
 
@@ -319,21 +252,11 @@ const DentalBookingSystem: React.FC = () => {
 	const handleTimeSelect = async (time: string): Promise<void> => {
 		try {
 			setSelectedTime(time);
-			const chamber =
-				selectedLocation === '1'
-					? 'College Square Branch'
-					: 'VIP Road Branch';
-			const countData = {
-				date: selectedDate,
-				chamber: chamber,
-				time: time,
-			};
-			// console.log('countData', countData);
+			const chamber = selectedLocation === '1' ? 'College Square Branch' : 'VIP Road Branch';
+			const countData = { date: selectedDate, chamber: chamber, time: time };
 			setIsLoading(true);
 			const res = await http.post('/waitinglist/count', countData);
-
 			const waitingListCount = res.data.count;
-			// console.log('💻waitingListCount', waitingListCount);
 			setWaitingListCount(waitingListCount);
 			setIsLoading(false);
 		} catch (error: any) {
@@ -342,52 +265,47 @@ const DentalBookingSystem: React.FC = () => {
 	};
 
 	const handleFormChange = (field: keyof FormData, value: string): void => {
-		setFormData((prev) => ({
-			...prev,
-			[field]: value,
-		}));
+		setFormData((prev) => ({ ...prev, [field]: value }));
 	};
 
 	const handleNext = (): void => {
 		if (currentStep < 5) {
+			setDirection(1);
 			setCurrentStep(currentStep + 1);
 		}
 	};
 
 	const handleBack = (): void => {
 		if (currentStep > 1) {
+			setDirection(-1);
 			setCurrentStep(currentStep - 1);
 		}
 	};
+
 	function showResult(t: string, d?: string) {
 		Swal.fire({
 			icon: 'success',
 			title: t,
 			text: d,
-			confirmButtonText: 'OK'
+			confirmButtonText: 'OK',
 		});
 	}
-	const isPaymentsEnabled =
-		process.env.NEXT_PUBLIC_IS_PAYMENTS_ENABLED === 'true';
+
+	const isPaymentsEnabled = process.env.NEXT_PUBLIC_IS_PAYMENTS_ENABLED === 'true';
 
 	const handleBooking = async () => {
 		if (isPaymentsEnabled) {
-			console.log('Payment enabled', isPaymentsEnabled);
 			await paymentBooking();
 		} else {
-			console.log('Payment disabled', isPaymentsEnabled);
 			await noPaymentBooking();
 		}
 	};
+
 	const noPaymentBooking = async (): Promise<void> => {
 		setIsLoading(true);
 		try {
-			const selectedLocationData = locations.find(
-				(loc) => loc.id === selectedLocation
-			);
-			const selectedDateData = calendarDays.find(
-				(d) => d.value === selectedDate
-			);
+			const selectedLocationData = locations.find((loc) => loc.id === selectedLocation);
+			const selectedDateData = calendarDays.find((d) => d.value === selectedDate);
 
 			const bookingData = {
 				name: formData.name.trim(),
@@ -401,9 +319,7 @@ const DentalBookingSystem: React.FC = () => {
 				message: formData.message,
 			};
 
-			// console.log('💻bookingData', bookingData);
 			const res = await http.post('/bookings/search', bookingData);
-			// console.log('💻res', res);
 
 			if (res.status === 200) {
 				const foundRes = res?.data?.booking;
@@ -412,50 +328,27 @@ const DentalBookingSystem: React.FC = () => {
 				return foundRes;
 			}
 			if (res.status === 201) {
-				console.log('404 called', bookingData);
 				const res = await http.post('/bookings/old', bookingData);
 				if (res?.data?.message === 'Booking confirmed') {
-					showResult(
-						'Your reservation is booked',
-						'Confirmation email sent.'
-					);
+					showResult('Your reservation is booked', 'Confirmation email sent.');
 				}
 				if (res?.data?.message === 'Added to waiting list') {
-					showResult(
-						'Added to waiting list',
-						`Position: ${res?.data?.position ?? '-'}`
-					);
+					showResult('Added to waiting list', `Position: ${res?.data?.position ?? '-'}`);
 				}
 			} else {
 				showResult('Unexpected response', 'Please contact support.');
 			}
-			setFormData({
-				name: '',
-				address: '',
-				email: '',
-				phone: '',
-				referredBy: '',
-				message: '',
-			});
-			setSelectedDate('');
-			setSelectedLocation('');
-			setSelectedTime('');
-			setWaitingListCount(0);
-			setCurrentStep(1);
+			resetForm();
 		} catch (error: any) {
 			console.error('❌ Error calling /bookings:', error);
 		}
-		// alert(`Booking confirmed!, ${bookingData}`);
 	};
+
 	const paymentBooking = async (): Promise<void> => {
 		setIsLoading(true);
 		try {
-			const selectedLocationData = locations.find(
-				(loc) => loc.id === selectedLocation
-			);
-			const selectedDateData = calendarDays.find(
-				(d) => d.value === selectedDate
-			);
+			const selectedLocationData = locations.find((loc) => loc.id === selectedLocation);
+			const selectedDateData = calendarDays.find((d) => d.value === selectedDate);
 
 			const bookingData = {
 				name: formData.name.trim(),
@@ -469,12 +362,8 @@ const DentalBookingSystem: React.FC = () => {
 				message: formData.message,
 			};
 			setNextBooking(bookingData);
-			// console.log('💻bookingData', bookingData);
-			const searchRes = await http.post<BookingSearchResponse>(
-				'/bookings/search',
-				bookingData
-			);
-			// console.log('💻searchRes', searchRes);
+
+			const searchRes = await http.post<BookingSearchResponse>('/bookings/search', bookingData);
 
 			if (searchRes.status === 200) {
 				const foundRes = searchRes?.data?.booking;
@@ -483,73 +372,38 @@ const DentalBookingSystem: React.FC = () => {
 				return;
 			}
 			if (searchRes.status === 201) {
-				// console.log('404 called', bookingData);
-				const bookingRes = await http.post<BookingResponse>(
-					'/bookings',
-					bookingData
-				);
-
-				// console.log('💻bookingRes', bookingRes?.data);
-
+				const bookingRes = await http.post<BookingResponse>('/bookings', bookingData);
 				const bookingId = bookingRes?.data?.bookingId;
 				const orderId = bookingRes?.data?.orderId;
 				const position = bookingRes?.data?.position;
-				// console.log('💻orderId, bookingId', orderId, bookingId);
-				// open razorpay
+
 				const res = await pay({ orderId, bookingId, position });
-				// console.log('💻razorpayRes', res);
-				if (
-					res?.status === 200 &&
-					res?.data?.message ===
-						'Payment verified & booking confirmed'
-				) {
-					showResult(
-						'Your reservation is booked',
-						'Payment verified and email sent.'
-					);
-				} else if (
-					res?.data?.message ===
-					'Payment verified & waitlisted booking given'
-				) {
-					showResult(
-						'Added to waiting list',
-						`Payment received. Position: ${
-							res?.data?.booking?.position ?? '-'
-						}`
-					);
+				if (res?.status === 200 && res?.data?.message === 'Payment verified & booking confirmed') {
+					showResult('Your reservation is booked', 'Payment verified and email sent.');
+				} else if (res?.data?.message === 'Payment verified & waitlisted booking given') {
+					showResult('Added to waiting list', `Payment received. Position: ${res?.data?.booking?.position ?? '-'}`);
 				} else {
-					showResult(
-						'Unexpected response',
-						'Please contact support.'
-					);
+					showResult('Unexpected response', 'Please contact support.');
 				}
 			}
-			setFormData({
-				name: '',
-				address: '',
-				email: '',
-				phone: '',
-				referredBy: '',
-				message: '',
-			});
-			setSelectedDate('');
-			setSelectedLocation('');
-			setSelectedTime('');
-			setWaitingListCount(0);
-			setCurrentStep(1);
+			resetForm();
 		} catch (error: any) {
 			console.error('❌ Error calling /bookings:', error);
-			showResult(
-				'Payment failed',
-				'The transaction could not be completed.'
-			);
+			showResult('Payment failed', 'The transaction could not be completed.');
 		} finally {
 			setIsLoading(false);
 		}
-		// alert(`Booking confirmed!, ${bookingData}`);
 	};
 
-	// method to validate step
+	const resetForm = () => {
+		setFormData({ name: '', address: '', email: '', phone: '', referredBy: '', message: '' });
+		setSelectedDate('');
+		setSelectedLocation('');
+		setSelectedTime('');
+		setWaitingListCount(0);
+		setCurrentStep(1);
+	};
+
 	const isStepValid = (step: number): boolean => {
 		switch (step) {
 			case 1:
@@ -559,12 +413,7 @@ const DentalBookingSystem: React.FC = () => {
 			case 3:
 				return !!selectedTime;
 			case 4:
-				return !!(
-					formData.name &&
-					formData.email &&
-					formData.phone &&
-					formData.address
-				);
+				return !!(formData.name && formData.email && formData.phone && formData.address);
 			case 5:
 				return true;
 			default:
@@ -572,661 +421,743 @@ const DentalBookingSystem: React.FC = () => {
 		}
 	};
 
+	// Animation variants
+	const slideVariants = {
+		enter: (direction: number) => ({
+			x: direction > 0 ? 300 : -300,
+			opacity: 0,
+		}),
+		center: {
+			x: 0,
+			opacity: 1,
+		},
+		exit: (direction: number) => ({
+			x: direction < 0 ? 300 : -300,
+			opacity: 0,
+		}),
+	};
+
+	const containerVariants = {
+		hidden: { opacity: 0 },
+		visible: {
+			opacity: 1,
+			transition: { staggerChildren: 0.1 },
+		},
+	};
+
+	const itemVariants = {
+		hidden: { opacity: 0, y: 20 },
+		visible: { opacity: 1, y: 0 },
+	};
+
 	return (
-		<div className="max-w-4xl mx-auto p-6 flex flex-col gap-4 bg-background ">
-			<div className="text-center mb-8">
-				<h1 className="text-3xl font-bold text-foreground mb-2">
+		<div className="w-full mx-auto p-6 md:p-8 flex flex-col gap-6 bg-gradient-to-br from-background via-background to-muted/20">
+			{/* Header */}
+			<motion.div
+				initial={{ opacity: 0, y: -20 }}
+				animate={{ opacity: 1, y: 0 }}
+				className="text-center"
+			>
+				<div className="flex items-center justify-center gap-2 mb-2">
+					<Sparkles className="w-5 h-5 text-primary" />
+					<span className="text-sm font-medium text-primary uppercase tracking-wider">
+						Easy Booking
+					</span>
+					<Sparkles className="w-5 h-5 text-primary" />
+				</div>
+				<h1 className="text-2xl md:text-3xl font-bold text-foreground">
 					Book Your Dental Appointment
 				</h1>
-				<p className="text-muted-foreground">
-					Quick and easy scheduling in just a few steps
+				<p className="text-muted-foreground mt-1">
+					Complete the steps below to schedule your visit
 				</p>
-			</div>
+			</motion.div>
 
-			{/* Progress Indicator */}
-			<div className="flex justify-center mb-8">
-				<div className="flex items-center gap-4">
-					{[1, 2, 3, 4, 5].map((step) => (
-						<div
-							key={step}
-							className={`w-10 h-10 rounded-full flex items-center justify-center font-semibold ${
-								currentStep >= step
-									? 'bg-primary text-primary-foreground'
-									: 'bg-muted text-muted-foreground'
-							}`}>
-							{currentStep > step ? <Check size={20} /> : step}
-						</div>
-					))}
-				</div>
-			</div>
+			{/* Enhanced Progress Indicator */}
+			<motion.div
+				initial={{ opacity: 0, y: 20 }}
+				animate={{ opacity: 1, y: 0 }}
+				transition={{ delay: 0.1 }}
+				className="flex justify-center"
+			>
+				<div className="flex items-center gap-0">
+					{stepInfo.map((step, index) => {
+						const stepNum = index + 1;
+						const isCompleted = currentStep > stepNum;
+						const isCurrent = currentStep === stepNum;
+						const Icon = step.icon;
 
-			<div className="space-y-8">
-				<div className="h-[32rem]">
-					{/* Step 1: Date Selection */}
-					{currentStep === 1 && (
-						<Card className="h-full">
-							<CardHeader>
-								<CardTitle className="flex items-center">
-									<Calendar className="w-6 h-6 text-primary mr-3" />
-									Select Date
-								</CardTitle>
-							</CardHeader>
-							<CardContent>
-								<div className="bg-card border rounded-lg p-4">
-									{/* Calendar Header */}
-									<div className="flex justify-between items-center mb-4">
-										<Button
-											variant="ghost"
-											size="icon"
-											onClick={goToPreviousMonth}>
-											<ChevronLeft className="w-5 h-5" />
-										</Button>
-										<h3 className="text-lg font-semibold">
-											{monthName}
-										</h3>
-										<Button
-											variant="ghost"
-											size="icon"
-											onClick={goToNextMonth}>
-											<ChevronRight className="w-5 h-5" />
-										</Button>
-									</div>
-
-									{/* Day Labels */}
-									<div className="grid grid-cols-7 gap-1 mb-2">
-										{[
-											'Sun',
-											'Mon',
-											'Tue',
-											'Wed',
-											'Thu',
-											'Fri',
-											'Sat',
-										].map((day) => (
-											<div
-												key={day}
-												className="text-center text-sm h-12 w-12 font-medium text-muted-foreground p-2">
-												{day}
-											</div>
-										))}
-									</div>
-
-									{/* Calendar Grid */}
-									<div className="grid grid-cols-7 gap-1 ">
-										{calendarDays.map((day, index) => (
-											<Button
-												key={index}
-												variant={
-													selectedDate === day.value
-														? 'default'
-														: 'ghost'
-												}
-												size="sm"
-												onClick={() => {
-													if (
-														!day.isPast &&
-														day.isCurrentMonth
-													) {
-														handleDateSelect(
-															day.value
-														);
-													}
-												}}
-												disabled={
-													day.day ===
-														new Date().getDate() ||
-													day.isPast ||
-													!day.isCurrentMonth
-												}
-												className={`
-                        h-12 w-12 text-sm font-medium
-                        ${
-							!day.isCurrentMonth
-								? 'text-muted-foreground/30'
-								: day.isPast
-								? 'text-muted-foreground/50'
-								: day.isToday && selectedDate !== day.value
-								? 'ring-2 ring-primary '
-								: ''
-						}
-                      `}>
-												{day.day}
-											</Button>
-										))}
-									</div>
-								</div>
-							</CardContent>
-						</Card>
-					)}
-
-					{/* Step 2: Location Selection */}
-					{currentStep === 2 && (
-						<Card className="h-full">
-							<CardHeader>
-								<CardTitle className="flex items-center">
-									<MapPin className="w-6 h-6 text-primary mr-3" />
-									Select Location
-								</CardTitle>
-							</CardHeader>
-							<CardContent className="flex flex-col gap-4">
-								<div className="relative mb-4 ">
-									<Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" />
-									<Input
-										type="text"
-										placeholder="Search locations by name or area..."
-										value={locationSearch}
-										onChange={(e) => {
-											setLocationSearch(e.target.value);
-											setShowLocationDropdown(true);
+						return (
+							<React.Fragment key={stepNum}>
+								<motion.div
+									className="flex flex-col items-center"
+									whileHover={{ scale: 1.05 }}
+								>
+									<motion.div
+										className={`
+											relative w-12 h-12 md:w-14 md:h-14 rounded-full flex items-center justify-center
+											font-semibold transition-all duration-300 cursor-pointer
+											${isCompleted
+												? 'bg-gradient-to-br from-green-500 to-emerald-600 text-white shadow-lg shadow-green-500/30'
+												: isCurrent
+													? 'bg-gradient-to-br from-primary to-primary/80 text-primary-foreground shadow-lg shadow-primary/30 ring-4 ring-primary/20'
+													: 'bg-muted text-muted-foreground hover:bg-muted/80'
+											}
+										`}
+										animate={{
+											scale: isCurrent ? [1, 1.05, 1] : 1,
 										}}
-										onFocus={() =>
-											setShowLocationDropdown(true)
-										}
-										className="pl-10 pr-4"
-									/>
-									<ChevronDown
-										className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5 cursor-pointer"
-										onClick={() =>
-											setShowLocationDropdown(
-												!showLocationDropdown
-											)
-										}
-									/>
-								</div>
+										transition={{
+											duration: 2,
+											repeat: isCurrent ? Infinity : 0,
+											ease: 'easeInOut',
+										}}
+									>
+										{isCompleted ? (
+											<motion.div
+												initial={{ scale: 0, rotate: -180 }}
+												animate={{ scale: 1, rotate: 0 }}
+												transition={{ type: 'spring', stiffness: 200 }}
+											>
+												<Check className="w-5 h-5 md:w-6 md:h-6" />
+											</motion.div>
+										) : (
+											<Icon className="w-5 h-5 md:w-6 md:h-6" />
+										)}
+									</motion.div>
+									<div className="mt-2 text-center hidden md:block">
+										<p className={`text-xs font-medium ${isCurrent ? 'text-primary' : 'text-muted-foreground'}`}>
+											{step.label}
+										</p>
+									</div>
+								</motion.div>
 
-								<div className="grid gap-3 max-h-80 overflow-y-auto">
-									{filteredLocations.map((location) => (
-										<Button
-											key={location.id}
-											variant={
-												selectedLocation === location.id
-													? 'default'
-													: 'outline'
-											}
-											className="p-4 h-auto justify-start"
-											onClick={() =>
-												handleLocationSelect(location)
-											}>
-											<div className="flex justify-between items-start w-full">
-												<div className="text-left">
-													<div className="font-semibold">
-														{location.name}
-													</div>
-													<div className="text-sm opacity-70">
-														{location.address}
-													</div>
-												</div>
-												{/* <div className="text-sm font-medium ml-4">
-													{location.distance}
-												</div> */}
-											</div>
-										</Button>
-									))}
-								</div>
-							</CardContent>
-						</Card>
-					)}
-
-					{/* Step 3: Time Selection */}
-					{currentStep === 3 && (
-						<Card className="h-full">
-							<CardHeader>
-								<CardTitle className="flex items-center">
-									<Clock className="w-6 h-6 text-primary mr-3" />
-									Select Time
-								</CardTitle>
-							</CardHeader>
-
-							<CardContent className="flex flex-col gap-6">
-								{/* Morning */}
-								<div className="	">
-									<div className=" font-semibold flex items-center gap-2 pb-2">
-										<Image
-											src="/images/pngs/sun.png"
-											alt="logo"
-											width={20}
-											height={20}
+								{stepNum < 5 && (
+									<div className="w-8 md:w-16 h-1 mx-1 rounded-full overflow-hidden bg-muted">
+										<motion.div
+											className="h-full bg-gradient-to-r from-green-500 to-primary"
+											initial={{ width: '0%' }}
+											animate={{ width: isCompleted ? '100%' : '0%' }}
+											transition={{ duration: 0.5, ease: 'easeInOut' }}
 										/>
-										Morning Slots
-									</div>
-									{morningTimes.length > 0 ? (
-										<div className="grid grid-cols-3 md:grid-cols-5 gap-4">
-											{morningTimes.map((time) => (
-												<Button
-													key={`m-${time}`}
-													variant={
-														selectedTime === time
-															? 'default'
-															: 'outline'
-													}
-													onClick={() =>
-														handleTimeSelect(time)
-													}
-													className="p-3">
-													{time}
-												</Button>
-											))}
-										</div>
-									) : (
-										<div className="text-sm text-red-500 italic">
-											*No Morning Slots
-										</div>
-									)}
-								</div>
-
-								{/* Evening */}
-								<div>
-									<div className="mb-2 font-semibold flex items-center gap-2 pb-2">
-										<Image
-											src="/images/pngs/moon.png"
-											alt="logo"
-											width={20}
-											height={20}
-										/>
-										Evening Slots
-									</div>
-									{eveningTimes.length > 0 ? (
-										<div className="grid grid-cols-3 md:grid-cols-5 gap-4">
-											{eveningTimes.map((time) => (
-												<Button
-													key={`e-${time}`}
-													variant={
-														selectedTime === time
-															? 'default'
-															: 'outline'
-													}
-													onClick={() =>
-														handleTimeSelect(time)
-													}
-													className="p-3">
-													{time}
-												</Button>
-											))}
-										</div>
-									) : (
-										<div className="text-sm text-red-500 italic">
-											*No Evening Slots
-										</div>
-									)}
-								</div>
-							</CardContent>
-
-							<CardFooter className=" h-full">
-								<div
-									className={`${
-										selectedTime === '' ? 'hidden' : 'block'
-									} p-2 rounded-lg w-full h-full`}>
-									{isLoading ? (
-										<div className="flex items-center justify-center gap-2">
-											<ClassicLoader className="h-10 w-10" />
-											<b>Fetching Slots...</b>
-										</div>
-									) : (
-										<div className="h-full w-full">
-											{waitingListCount === 0 ? (
-												<div className="h-full w-full">
-													<Card className="h-full w-full">
-														<CardHeader>
-															<CardTitle className="flex items-center">
-																Confirmation
-																Notice
-															</CardTitle>
-														</CardHeader>
-														<CardFooter className="text-green-600">
-															Your booking slot is
-															available please
-															proceed clicking on
-															'Next'
-														</CardFooter>
-													</Card>
-												</div>
-											) : (
-												<div className="">
-													<Card className="h-full w-full">
-														<CardHeader>
-															<CardTitle className="flex items-center">
-																Confirmation
-																Notice
-															</CardTitle>
-														</CardHeader>
-														<CardContent className="text-red-600">
-															This schedule is
-															already have{' '}
-															{waitingListCount}{' '}
-															booking
-															<p>
-																you can proceed
-																clicking on
-																'Next' with the
-																booking if it's
-																urgent else book
-																another time
-																slot{' '}
-															</p>
-														</CardContent>
-														<CardFooter className="text-red-600">
-															**please note that
-															incase your booking
-															is not confirmed,
-															your booking amount
-															will be refunded
-															back to the original
-															payment method
-														</CardFooter>
-													</Card>
-												</div>
-											)}
-										</div>
-									)}
-								</div>
-							</CardFooter>
-						</Card>
-					)}
-
-					{/* Step 4: Personal Information */}
-					{currentStep === 4 && (
-						<Card className="h-full">
-							<CardHeader>
-								<CardTitle className="flex items-center">
-									<User className="w-6 h-6 text-primary mr-3" />
-									Personal Information
-								</CardTitle>
-								<CardDescription>
-									Please provide your contact details for the
-									appointment
-								</CardDescription>
-							</CardHeader>
-							<CardContent className="flex flex-col gap-4">
-								<div className="grid grid-cols-1  gap-4">
-									<div className="flex flex-col gap-1">
-										<Label htmlFor="name">
-											Full Name *
-										</Label>
-										<Input
-											id="name"
-											type="text"
-											placeholder="Enter your full name"
-											value={formData.name}
-											onChange={(e) =>
-												handleFormChange(
-													'name',
-													e.target.value
-												)
-											}
-											required
-										/>
-									</div>
-									<div className="flex flex-col gap-1">
-										<Label htmlFor="email">
-											Email Address *
-										</Label>
-										<Input
-											id="email"
-											type="email"
-											placeholder="Enter your email"
-											value={formData.email}
-											onChange={(e) =>
-												handleFormChange(
-													'email',
-													e.target.value
-												)
-											}
-											required
-										/>
-									</div>
-								</div>
-
-								<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-									<div className="flex flex-col gap-1">
-										<Label htmlFor="phone">
-											Phone Number *
-										</Label>
-										<Input
-											id="phone"
-											type="tel"
-											placeholder="Enter your phone number"
-											value={formData.phone}
-											onChange={(e) =>
-												handleFormChange(
-													'phone',
-													e.target.value
-												)
-											}
-											required
-										/>
-									</div>
-									<div className="flex flex-col gap-1">
-										<Label htmlFor="referredBy">
-											Referred By:
-										</Label>
-										<Input
-											id="referredBy"
-											type="text"
-											placeholder="Referred By"
-											value={formData.referredBy}
-											onChange={(e) =>
-												handleFormChange(
-													'referredBy',
-													e.target.value
-												)
-											}
-										/>
-									</div>
-								</div>
-
-								<div className="flex flex-col gap-1">
-									<Label htmlFor="address">Address *</Label>
-									<Input
-										id="address"
-										type="text"
-										placeholder="Enter your full address"
-										value={formData.address}
-										onChange={(e) =>
-											handleFormChange(
-												'address',
-												e.target.value
-											)
-										}
-										required
-									/>
-								</div>
-								<div className="flex flex-col gap-1">
-									<label htmlFor="message">Message:</label>
-									<textarea
-										id="message"
-										className="w-full p-2 border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 resize-none"
-										placeholder="Enter your message"
-										value={formData.message}
-										onChange={(e) =>
-											handleFormChange(
-												'message',
-												e.target.value
-											)
-										}
-									/>
-								</div>
-							</CardContent>
-						</Card>
-					)}
-
-					{/* Step 5: Review and Confirm */}
-					{currentStep === 5 && (
-						<Card className="h-full">
-							<CardHeader>
-								<CardTitle>Review Your Appointment</CardTitle>
-								<CardDescription>
-									Please review all details before confirming
-									your booking
-								</CardDescription>
-							</CardHeader>
-							<CardContent>
-								<div className="flex flex-col gap-6">
-									{/* Appointment Details */}
-									<div>
-										<h3 className="font-semibold mb-3">
-											Appointment Details
-										</h3>
-										<div className="bg-muted rounded-lg p-4 flex flex-col gap-1">
-											<div className="flex justify-between">
-												<span className="font-medium">
-													Location:
-												</span>
-												<span>
-													{
-														locations.find(
-															(loc) =>
-																loc.id ===
-																selectedLocation
-														)?.name
-													}
-												</span>
-											</div>
-											<div className="flex justify-between">
-												<span className="font-medium">
-													Address:
-												</span>
-												<span className="text-right">
-													{
-														locations.find(
-															(loc) =>
-																loc.id ===
-																selectedLocation
-														)?.address
-													}
-												</span>
-											</div>
-											<div className="flex justify-between">
-												<span className="font-medium">
-													Date:
-												</span>
-												<span>
-													{
-														calendarDays.find(
-															(d) =>
-																d.value ===
-																selectedDate
-														)?.dayName
-													}
-													,{' '}
-													{
-														calendarDays.find(
-															(d) =>
-																d.value ===
-																selectedDate
-														)?.display
-													}
-												</span>
-											</div>
-											<div className="flex justify-between">
-												<span className="font-medium">
-													Time:
-												</span>
-												<span>{selectedTime}</span>
-											</div>
-										</div>
-									</div>
-
-									{/* Personal Information */}
-									<div>
-										<h3 className="font-semibold mb-3">
-											Personal Information
-										</h3>
-										<div className="bg-muted rounded-lg p-4 flex flex-col gap-1">
-											<div className="flex justify-between">
-												<span className="font-medium">
-													Name:
-												</span>
-												<span>{formData.name}</span>
-											</div>
-											<div className="flex justify-between">
-												<span className="font-medium">
-													Email:
-												</span>
-												<span>{formData.email}</span>
-											</div>
-											<div className="flex justify-between">
-												<span className="font-medium">
-													Phone:
-												</span>
-												<span>{formData.phone}</span>
-											</div>
-											<div className="flex justify-between">
-												<span className="font-medium">
-													Address:
-												</span>
-												<span className="text-right">
-													{formData.address}
-												</span>
-											</div>
-											{formData.referredBy && (
-												<div className="flex justify-between">
-													<span className="font-medium">
-														Referred by:
-													</span>
-													<span>
-														{formData.referredBy}
-													</span>
-												</div>
-											)}
-										</div>
-									</div>
-								</div>
-							</CardContent>
-						</Card>
-					)}
-				</div>
-
-				{/* Navigation Buttons */}
-				<div className="flex justify-between pt-6">
-					<Button
-						variant="outline"
-						onClick={handleBack}
-						disabled={currentStep === 1}
-						className="flex items-center">
-						<ArrowLeft className="w-4 h-4 mr-2" />
-						Back
-					</Button>
-
-					{currentStep < 5 ? (
-						<Button
-							onClick={handleNext}
-							disabled={!isStepValid(currentStep)}
-							className="flex items-center">
-							Next
-							<ArrowRight className="w-4 h-4 ml-2" />
-						</Button>
-					) : (
-						<>
-							<Script
-								id="razorpay-checkout"
-								src="https://checkout.razorpay.com/v1/checkout.js"
-								strategy="afterInteractive"
-							/>
-							<Button
-								onClick={handleBooking}
-								className="flex items-center bg-primary hover:bg-primary/80">
-								{isLoading ? (
-									<div className="flex items-center gap-2">
-										<ClassicLoader className="border-white" />
-										Processing...
-									</div>
-								) : (
-									<div className="flex items-center gap-2">
-										<Check className="w-4 h-4 mr-2" />
-										Confirm Booking
 									</div>
 								)}
-							</Button>
-							<BookingModal
-								oldBooking={previousBooking}
-								newBooking={nextBooking}
-								open={modalOpen}
-								setOpen={setModalOpen}
-							/>
-						</>
-					)}
+							</React.Fragment>
+						);
+					})}
 				</div>
+			</motion.div>
+
+			{/* Step Content */}
+			<div className="relative">
+				<AnimatePresence mode="wait" custom={direction}>
+					<motion.div
+						key={currentStep}
+						custom={direction}
+						variants={slideVariants}
+						initial="enter"
+						animate="center"
+						exit="exit"
+						transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+						className="w-full"
+					>
+						{/* Step 1: Date Selection */}
+						{currentStep === 1 && (
+							<Card className="h-full border-0 shadow-xl bg-card/80 backdrop-blur-sm">
+								<CardHeader className="pb-4">
+									<CardTitle className="flex items-center gap-3 text-xl">
+										<div className="p-2 rounded-xl bg-primary/10">
+											<Calendar className="w-6 h-6 text-primary" />
+										</div>
+										Select Your Preferred Date
+									</CardTitle>
+									<CardDescription>
+										Choose a date for your appointment
+									</CardDescription>
+								</CardHeader>
+								<CardContent>
+									<div className="bg-muted/30 rounded-2xl p-4 md:p-6">
+										{/* Calendar Header */}
+										<div className="flex justify-between items-center mb-6">
+											<Button
+												variant="ghost"
+												size="icon"
+												onClick={goToPreviousMonth}
+												className="hover:bg-primary/10 rounded-xl"
+											>
+												<ChevronLeft className="w-5 h-5" />
+											</Button>
+											<h3 className="text-lg font-bold text-foreground">
+												{monthName}
+											</h3>
+											<Button
+												variant="ghost"
+												size="icon"
+												onClick={goToNextMonth}
+												className="hover:bg-primary/10 rounded-xl"
+											>
+												<ChevronRight className="w-5 h-5" />
+											</Button>
+										</div>
+
+										{/* Day Labels */}
+										<div className="grid grid-cols-7 gap-1 mb-3">
+											{['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day) => (
+												<div
+													key={day}
+													className="text-center text-xs font-semibold text-muted-foreground py-2"
+												>
+													{day}
+												</div>
+											))}
+										</div>
+
+										{/* Calendar Grid */}
+										<motion.div
+											variants={containerVariants}
+											initial="hidden"
+											animate="visible"
+											className="grid grid-cols-7 gap-1"
+										>
+											{calendarDays.map((day, index) => {
+												const isSelected = selectedDate === day.value;
+												const isDisabled = day.day === new Date().getDate() || day.isPast || !day.isCurrentMonth;
+
+												return (
+													<motion.div key={index} variants={itemVariants}>
+														<Button
+															variant="ghost"
+															size="sm"
+															onClick={() => {
+																if (!day.isPast && day.isCurrentMonth) {
+																	handleDateSelect(day.value);
+																}
+															}}
+															disabled={isDisabled}
+															className={`
+																w-full h-10 md:h-12 text-sm font-medium rounded-xl transition-all duration-200
+																${!day.isCurrentMonth ? 'text-muted-foreground/30' : ''}
+																${day.isPast ? 'text-muted-foreground/50' : ''}
+																${isSelected
+																	? 'bg-primary text-primary-foreground shadow-lg shadow-primary/30 hover:bg-primary'
+																	: day.isToday && !isSelected
+																		? 'ring-2 ring-primary bg-primary/10'
+																		: 'hover:bg-muted'
+																}
+															`}
+														>
+															{day.day}
+														</Button>
+													</motion.div>
+												);
+											})}
+										</motion.div>
+									</div>
+
+									{selectedDate && (
+										<motion.div
+											initial={{ opacity: 0, y: 10 }}
+											animate={{ opacity: 1, y: 0 }}
+											className="mt-4 p-4  mx-auto bg-primary/5 rounded-xl border border-primary/20"
+										>
+											<p className="text-sm text-primary font-medium flex items-center gap-2">
+												<CheckCircle2 className="w-4 h-4" />
+												Selected: {calendarDays.find((d) => d.value === selectedDate)?.display}
+											</p>
+										</motion.div>
+									)}
+								</CardContent>
+							</Card>
+						)}
+
+						{/* Step 2: Location Selection */}
+						{currentStep === 2 && (
+							<Card className="h-full border-0 shadow-xl bg-card/80 backdrop-blur-sm">
+								<CardHeader className="pb-4">
+									<CardTitle className="flex items-center gap-3 text-xl">
+										<div className="p-2 rounded-xl bg-primary/10">
+											<MapPin className="w-6 h-6 text-primary" />
+										</div>
+										Select Location
+									</CardTitle>
+									<CardDescription>
+										Choose your preferred clinic branch
+									</CardDescription>
+								</CardHeader>
+								<CardContent className="flex flex-col gap-4">
+									<div className="relative">
+										<Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" />
+										<Input
+											type="text"
+											placeholder="Search locations..."
+											value={locationSearch}
+											onChange={(e) => {
+												setLocationSearch(e.target.value);
+												setShowLocationDropdown(true);
+											}}
+											onFocus={() => setShowLocationDropdown(true)}
+											className="pl-12 pr-4 h-12 rounded-xl border-2 focus:border-primary"
+										/>
+									</div>
+
+									<motion.div
+										variants={containerVariants}
+										initial="hidden"
+										animate="visible"
+										className="grid gap-4"
+									>
+										{filteredLocations.map((location, index) => (
+											<motion.div key={location.id} variants={itemVariants}>
+												<motion.button
+													whileHover={{ scale: 1.02 }}
+													whileTap={{ scale: 0.98 }}
+													onClick={() => handleLocationSelect(location)}
+													className={`
+														w-full p-5 rounded-2xl text-left transition-all duration-300
+														${selectedLocation === location.id
+															? 'bg-gradient-to-br from-primary to-primary/80 text-primary-foreground shadow-lg shadow-primary/30'
+															: 'bg-muted/50 hover:bg-muted border-2 border-transparent hover:border-primary/20'
+														}
+													`}
+												>
+													<div className="flex items-start gap-4">
+														<div className={`
+															p-3 rounded-xl
+															${selectedLocation === location.id
+																? 'bg-white/20'
+																: 'bg-primary/10'
+															}
+														`}>
+															<MapPin className={`w-6 h-6 ${selectedLocation === location.id ? 'text-white' : 'text-primary'}`} />
+														</div>
+														<div className="flex-1">
+															<h3 className="font-semibold text-lg">{location.name}</h3>
+															<p className={`text-sm mt-1 ${selectedLocation === location.id ? 'text-white/80' : 'text-muted-foreground'}`}>
+																{location.address}
+															</p>
+														</div>
+														{selectedLocation === location.id && (
+															<motion.div
+																initial={{ scale: 0 }}
+																animate={{ scale: 1 }}
+																className="p-2 bg-white/20 rounded-full"
+															>
+																<Check className="w-5 h-5" />
+															</motion.div>
+														)}
+													</div>
+												</motion.button>
+											</motion.div>
+										))}
+									</motion.div>
+								</CardContent>
+							</Card>
+						)}
+
+						{/* Step 3: Time Selection */}
+						{currentStep === 3 && (
+							<Card className="h-full border-0 shadow-xl bg-card/80 backdrop-blur-sm overflow-auto">
+								<CardHeader className="pb-4">
+									<CardTitle className="flex items-center gap-3 text-xl">
+										<div className="p-2 rounded-xl bg-primary/10">
+											<Clock className="w-6 h-6 text-primary" />
+										</div>
+										Select Time Slot
+									</CardTitle>
+									<CardDescription>
+										Choose your preferred appointment time
+									</CardDescription>
+								</CardHeader>
+								<CardContent className="flex flex-col gap-6">
+									{/* Morning Slots */}
+									<div>
+										<div className="flex items-center gap-2 mb-3">
+											<div className="p-1.5 rounded-lg bg-amber-100 dark:bg-amber-900/30">
+												<Sun className="w-4 h-4 text-amber-600" />
+											</div>
+											<span className="font-semibold">Morning Slots</span>
+										</div>
+										{morningTimes.length > 0 ? (
+											<motion.div
+												variants={containerVariants}
+												initial="hidden"
+												animate="visible"
+												className="grid grid-cols-3 md:grid-cols-5 gap-3"
+											>
+												{morningTimes.map((time) => (
+													<motion.div key={`m-${time}`} variants={itemVariants}>
+														<Button
+															variant={selectedTime === time ? 'default' : 'outline'}
+															onClick={() => handleTimeSelect(time)}
+															className={`
+																w-full h-12 rounded-xl font-medium transition-all
+																${selectedTime === time
+																	? 'bg-primary shadow-lg shadow-primary/30'
+																	: 'hover:border-primary hover:bg-primary/5'
+																}
+															`}
+														>
+															{time}
+														</Button>
+													</motion.div>
+												))}
+											</motion.div>
+										) : (
+											<p className="text-sm text-muted-foreground italic p-3 bg-muted/50 rounded-xl">
+												No morning slots available for this date
+											</p>
+										)}
+									</div>
+
+									{/* Evening Slots */}
+									<div>
+										<div className="flex items-center gap-2 mb-3">
+											<div className="p-1.5 rounded-lg bg-indigo-100 dark:bg-indigo-900/30">
+												<Moon className="w-4 h-4 text-indigo-600" />
+											</div>
+											<span className="font-semibold">Evening Slots</span>
+										</div>
+										{eveningTimes.length > 0 ? (
+											<motion.div
+												variants={containerVariants}
+												initial="hidden"
+												animate="visible"
+												className="grid grid-cols-3 md:grid-cols-5 gap-3"
+											>
+												{eveningTimes.map((time) => (
+													<motion.div key={`e-${time}`} variants={itemVariants}>
+														<Button
+															variant={selectedTime === time ? 'default' : 'outline'}
+															onClick={() => handleTimeSelect(time)}
+															className={`
+																w-full h-12 rounded-xl font-medium transition-all
+																${selectedTime === time
+																	? 'bg-primary shadow-lg shadow-primary/30'
+																	: 'hover:border-primary hover:bg-primary/5'
+																}
+															`}
+														>
+															{time}
+														</Button>
+													</motion.div>
+												))}
+											</motion.div>
+										) : (
+											<p className="text-sm text-muted-foreground italic p-3 bg-muted/50 rounded-xl">
+												No evening slots available for this date
+											</p>
+										)}
+									</div>
+
+									{/* Status Notice */}
+									{selectedTime && (
+										<motion.div
+											initial={{ opacity: 0, y: 10 }}
+											animate={{ opacity: 1, y: 0 }}
+										>
+											{isLoading ? (
+												<div className="flex items-center justify-center gap-3 p-4 bg-muted/50 rounded-xl">
+													<ClassicLoader className="h-6 w-6" />
+													<span className="font-medium">Checking availability...</span>
+												</div>
+											) : waitingListCount === 0 ? (
+												<div className="p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-xl">
+													<div className="flex items-center gap-3">
+														<CheckCircle2 className="w-5 h-5 text-green-600" />
+														<div>
+															<p className="font-medium text-green-700 dark:text-green-400">Slot Available!</p>
+															<p className="text-sm text-green-600 dark:text-green-500">This time slot is open for booking</p>
+														</div>
+													</div>
+												</div>
+											) : (
+												<div className="p-4 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-xl">
+													<div className="flex items-start gap-3">
+														<AlertCircle className="w-5 h-5 text-amber-600 mt-0.5" />
+														<div>
+															<p className="font-medium text-amber-700 dark:text-amber-400">Waiting List</p>
+															<p className="text-sm text-amber-600 dark:text-amber-500">
+																{waitingListCount} booking(s) already exist. You'll be added to the waiting list.
+															</p>
+														</div>
+													</div>
+												</div>
+											)}
+										</motion.div>
+									)}
+								</CardContent>
+							</Card>
+						)}
+
+						{/* Step 4: Personal Information */}
+						{currentStep === 4 && (
+							<Card className="h-full border-0 shadow-xl bg-card/80 backdrop-blur-sm overflow-auto">
+								<CardHeader className="pb-4">
+									<CardTitle className="flex items-center gap-3 text-xl">
+										<div className="p-2 rounded-xl bg-primary/10">
+											<User className="w-6 h-6 text-primary" />
+										</div>
+										Personal Information
+									</CardTitle>
+									<CardDescription>
+										Please provide your contact details
+									</CardDescription>
+								</CardHeader>
+								<CardContent>
+									<motion.div
+										variants={containerVariants}
+										initial="hidden"
+										animate="visible"
+										className="space-y-4"
+									>
+										<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+											<motion.div variants={itemVariants} className="space-y-2">
+												<Label htmlFor="name" className="text-sm font-medium">
+													Full Name <span className="text-destructive">*</span>
+												</Label>
+												<Input
+													id="name"
+													type="text"
+													placeholder="Enter your full name"
+													value={formData.name}
+													onChange={(e) => handleFormChange('name', e.target.value)}
+													className="h-12 rounded-xl border-2 focus:border-primary"
+													required
+												/>
+											</motion.div>
+											<motion.div variants={itemVariants} className="space-y-2">
+												<Label htmlFor="email" className="text-sm font-medium">
+													Email Address <span className="text-destructive">*</span>
+												</Label>
+												<Input
+													id="email"
+													type="email"
+													placeholder="Enter your email"
+													value={formData.email}
+													onChange={(e) => handleFormChange('email', e.target.value)}
+													className="h-12 rounded-xl border-2 focus:border-primary"
+													required
+												/>
+											</motion.div>
+										</div>
+
+										<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+											<motion.div variants={itemVariants} className="space-y-2">
+												<Label htmlFor="phone" className="text-sm font-medium">
+													Phone Number <span className="text-destructive">*</span>
+												</Label>
+												<Input
+													id="phone"
+													type="tel"
+													placeholder="Enter your phone number"
+													value={formData.phone}
+													onChange={(e) => handleFormChange('phone', e.target.value)}
+													className="h-12 rounded-xl border-2 focus:border-primary"
+													required
+												/>
+											</motion.div>
+											<motion.div variants={itemVariants} className="space-y-2">
+												<Label htmlFor="referredBy" className="text-sm font-medium">
+													Referred By
+												</Label>
+												<Input
+													id="referredBy"
+													type="text"
+													placeholder="Optional"
+													value={formData.referredBy}
+													onChange={(e) => handleFormChange('referredBy', e.target.value)}
+													className="h-12 rounded-xl border-2 focus:border-primary"
+												/>
+											</motion.div>
+										</div>
+
+										<motion.div variants={itemVariants} className="space-y-2">
+											<Label htmlFor="address" className="text-sm font-medium">
+												Address <span className="text-destructive">*</span>
+											</Label>
+											<Input
+												id="address"
+												type="text"
+												placeholder="Enter your full address"
+												value={formData.address}
+												onChange={(e) => handleFormChange('address', e.target.value)}
+												className="h-12 rounded-xl border-2 focus:border-primary"
+												required
+											/>
+										</motion.div>
+
+										<motion.div variants={itemVariants} className="space-y-2">
+											<Label htmlFor="message" className="text-sm font-medium">
+												Message (Optional)
+											</Label>
+											<textarea
+												id="message"
+												className="w-full p-3 min-h-[80px] border-2 rounded-xl focus:outline-none focus:border-primary resize-none bg-background"
+												placeholder="Any additional notes for the doctor..."
+												value={formData.message}
+												onChange={(e) => handleFormChange('message', e.target.value)}
+											/>
+										</motion.div>
+									</motion.div>
+								</CardContent>
+							</Card>
+						)}
+
+						{/* Step 5: Review and Confirm */}
+						{currentStep === 5 && (
+							<Card className="h-full border-0 shadow-xl bg-card/80 backdrop-blur-sm overflow-auto">
+								<CardHeader className="pb-4">
+									<CardTitle className="flex items-center gap-3 text-xl">
+										<div className="p-2 rounded-xl bg-primary/10">
+											<Check className="w-6 h-6 text-primary" />
+										</div>
+										Review Your Booking
+									</CardTitle>
+									<CardDescription>
+										Please verify all details before confirming
+									</CardDescription>
+								</CardHeader>
+								<CardContent>
+									<motion.div
+										variants={containerVariants}
+										initial="hidden"
+										animate="visible"
+										className="space-y-6"
+									>
+										{/* Appointment Details */}
+										<motion.div variants={itemVariants}>
+											<h3 className="font-semibold mb-3 flex items-center gap-2">
+												<Calendar className="w-4 h-4 text-primary" />
+												Appointment Details
+											</h3>
+											<div className="bg-gradient-to-br from-primary/5 to-primary/10 rounded-2xl p-4 space-y-3">
+												<div className="flex justify-between items-center">
+													<span className="text-muted-foreground">Location</span>
+													<span className="font-medium">
+														{locations.find((loc) => loc.id === selectedLocation)?.name}
+													</span>
+												</div>
+												<div className="flex justify-between items-center">
+													<span className="text-muted-foreground">Address</span>
+													<span className="font-medium text-right max-w-[60%]">
+														{locations.find((loc) => loc.id === selectedLocation)?.address}
+													</span>
+												</div>
+												<div className="flex justify-between items-center">
+													<span className="text-muted-foreground">Date</span>
+													<span className="font-medium">
+														{calendarDays.find((d) => d.value === selectedDate)?.display}
+													</span>
+												</div>
+												<div className="flex justify-between items-center">
+													<span className="text-muted-foreground">Time</span>
+													<span className="font-medium">{selectedTime}</span>
+												</div>
+											</div>
+										</motion.div>
+
+										{/* Personal Information */}
+										<motion.div variants={itemVariants}>
+											<h3 className="font-semibold mb-3 flex items-center gap-2">
+												<User className="w-4 h-4 text-primary" />
+												Personal Information
+											</h3>
+											<div className="bg-muted/50 rounded-2xl p-4 space-y-3">
+												<div className="flex justify-between items-center">
+													<span className="text-muted-foreground">Name</span>
+													<span className="font-medium">{formData.name}</span>
+												</div>
+												<div className="flex justify-between items-center">
+													<span className="text-muted-foreground">Email</span>
+													<span className="font-medium">{formData.email}</span>
+												</div>
+												<div className="flex justify-between items-center">
+													<span className="text-muted-foreground">Phone</span>
+													<span className="font-medium">{formData.phone}</span>
+												</div>
+												<div className="flex justify-between items-center">
+													<span className="text-muted-foreground">Address</span>
+													<span className="font-medium text-right max-w-[60%]">{formData.address}</span>
+												</div>
+												{formData.referredBy && (
+													<div className="flex justify-between items-center">
+														<span className="text-muted-foreground">Referred by</span>
+														<span className="font-medium">{formData.referredBy}</span>
+													</div>
+												)}
+											</div>
+										</motion.div>
+									</motion.div>
+								</CardContent>
+							</Card>
+						)}
+					</motion.div>
+				</AnimatePresence>
 			</div>
+
+			{/* Navigation Buttons */}
+			<motion.div
+				initial={{ opacity: 0, y: 20 }}
+				animate={{ opacity: 1, y: 0 }}
+				transition={{ delay: 0.3 }}
+				className="flex justify-between items-center pt-4"
+			>
+				<Button
+					variant="outline"
+					onClick={handleBack}
+					disabled={currentStep === 1}
+					className="h-12 px-6 rounded-xl font-medium transition-all hover:bg-muted"
+				>
+					<ArrowLeft className="w-4 h-4 mr-2" />
+					Back
+				</Button>
+
+				{currentStep < 5 ? (
+					<Button
+						onClick={handleNext}
+						disabled={!isStepValid(currentStep)}
+						className="h-12 px-8 rounded-xl font-medium bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-lg shadow-primary/30 transition-all"
+					>
+						Next
+						<ArrowRight className="w-4 h-4 ml-2" />
+					</Button>
+				) : (
+					<>
+						<Script
+							id="razorpay-checkout"
+							src="https://checkout.razorpay.com/v1/checkout.js"
+							strategy="afterInteractive"
+						/>
+						<Button
+							onClick={handleBooking}
+							disabled={isLoading}
+							className="h-12 px-8 rounded-xl font-medium bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 shadow-lg shadow-green-500/30 transition-all"
+						>
+							{isLoading ? (
+								<span className="flex items-center gap-2">
+									<motion.span
+										animate={{ rotate: 360 }}
+										transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+										className="w-5 h-5 border-2 border-current border-t-transparent rounded-full inline-block"
+									/>
+									Processing...
+								</span>
+							) : (
+								<span className="flex items-center gap-2">
+									<Check className="w-5 h-5" />
+									Confirm Booking
+								</span>
+							)}
+						</Button>
+						<BookingModal
+							oldBooking={previousBooking}
+							newBooking={nextBooking}
+							open={modalOpen}
+							setOpen={setModalOpen}
+						/>
+					</>
+				)}
+			</motion.div>
 		</div>
 	);
 };
