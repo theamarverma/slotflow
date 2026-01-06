@@ -73,6 +73,7 @@ h6 {
 p {
 	text-wrap: pretty;
 }
+
 h1,
 h2,
 h3,
@@ -201,6 +202,7 @@ h6 {
 	* {
 		@apply border-border outline-ring/50;
 	}
+
 	body {
 		@apply bg-background text-foreground;
 	}
@@ -212,26 +214,32 @@ h6 {
 		opacity: 0;
 		transform: translateY(16px);
 	}
+
 	to {
 		opacity: 1;
 		transform: translateY(0);
 	}
 }
+
 @keyframes float-slow {
 	0% {
 		transform: translateY(0px);
 	}
+
 	50% {
 		transform: translateY(-6px);
 	}
+
 	100% {
 		transform: translateY(0px);
 	}
 }
+
 @keyframes shimmer {
 	0% {
 		background-position: -200% 0;
 	}
+
 	100% {
 		background-position: 200% 0;
 	}
@@ -241,6 +249,7 @@ h6 {
 	opacity: 0;
 	transform: translateY(16px);
 }
+
 .reveal-visible {
 	opacity: 1;
 	transform: translateY(0);
@@ -250,6 +259,7 @@ h6 {
 .hover-lift {
 	transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
+
 .hover-lift:hover {
 	transform: translateY(-4px);
 	box-shadow: 0 10px 24px rgba(0, 0, 0, 0.12);
@@ -261,14 +271,13 @@ h6 {
 }
 
 .btn-shimmer {
-	background-image: linear-gradient(
-		90deg,
-		rgba(255, 255, 255, 0) 0%,
-		rgba(255, 255, 255, 0.25) 50%,
-		rgba(255, 255, 255, 0) 100%
-	);
+	background-image: linear-gradient(90deg,
+			rgba(255, 255, 255, 0) 0%,
+			rgba(255, 255, 255, 0.25) 50%,
+			rgba(255, 255, 255, 0) 100%);
 	background-size: 200% 100%;
 }
+
 .btn-shimmer:hover {
 	animation: shimmer 1.2s linear infinite;
 }
