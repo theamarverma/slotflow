@@ -113,7 +113,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onBookNowClick }) => {
                             const featuresSection = document.getElementById('features-section');
                             featuresSection?.scrollIntoView({ behavior: 'smooth' });
                         }}
-                        className="px-8 py-6 text-lg font-semibold rounded-xl border-2 hover:bg-muted/50 transition-all duration-300"
+                        className="px-8 py-6 text-lg font-semibold rounded-xl border-2 hover:bg-muted/50 hover:text-primary-custom transition-all duration-300"
                     >
                         Learn More
                     </Button>

@@ -147,19 +147,19 @@ export const CancelModal: React.FC<CancelModalProps> = ({ isOpen, onClose }) => 
 
                                 {/* Header */}
                                 <div className="text-center mb-6">
-                                    <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-r from-stormy-teal to-pacific-blue mb-4">
+                                    <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-r from-stormy-teal to-pacific-blue mb-4!">
                                         <XCircle className="w-8 h-8 text-white" />
                                     </div>
-                                    <h2 className="text-2xl font-bold text-gray-800 mb-2">
+                                    <h2 className="text-2xl font-bold text-gray-800 mb-2!">
                                         Cancel Appointment
                                     </h2>
-                                    <p className="text-gray-600 text-sm">
+                                    <p className="text-gray-600 text-sm mb-4!">
                                         We understand plans change. Fill in the details below to cancel your booking.
                                     </p>
                                 </div>
 
                                 {/* Instructions */}
-                                <div className="mb-6 p-3 rounded-xl bg-amber-50/80 backdrop-blur-sm border border-amber-200/50">
+                                <div className="mb-6! p-3 rounded-xl bg-amber-50/80 backdrop-blur-sm border border-amber-200/50">
                                     <div className="flex items-start gap-2">
                                         <AlertTriangle className="w-4 h-4 text-amber-600 mt-0.5 flex-shrink-0" />
                                         <div className="text-xs text-amber-800">
@@ -256,7 +256,7 @@ export const CancelModal: React.FC<CancelModalProps> = ({ isOpen, onClose }) => 
                                 </form>
 
                                 {/* Help Text */}
-                                <p className="text-center text-xs text-gray-600 mt-4">
+                                <p className="text-center text-xs text-gray-600 mt-4!">
                                     Need help? Contact{' '}
                                     <a
                                         href="mailto:support@slotflow.com"

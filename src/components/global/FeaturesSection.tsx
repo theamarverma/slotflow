@@ -57,7 +57,7 @@ export const FeaturesSection: React.FC = () => {
             id="features-section"
             className="py-20 md:py-28 bg-gradient-to-b from-background to-muted/30"
         >
-            <div className="container mx-auto flex flex-col gap-10 px-6">
+            <div className="container mx-auto! flex flex-col gap-10 px-6">
                 {/* Section Header */}
                 <motion.div
                     initial={{ opacity: 0, y: 30 }}

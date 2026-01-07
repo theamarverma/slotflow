@@ -633,7 +633,7 @@ const BookingSystem: React.FC = () => {
 												variant="ghost"
 												size="icon"
 												onClick={goToPreviousMonth}
-												className="hover:bg-primary/10 rounded-xl"
+												className="hover:bg-primary/10  rounded-xl"
 											>
 												<ChevronLeft className="w-5 h-5" />
 											</Button>
@@ -843,7 +843,7 @@ const BookingSystem: React.FC = () => {
 																w-full h-12 rounded-xl font-medium transition-all
 																${selectedTime === time
 																	? 'bg-primary shadow-lg shadow-primary/30'
-																	: 'hover:border-primary hover:bg-primary/5'
+																	: 'hover:border-primary hover:bg-primary/50 '
 																}
 															`}
 														>
@@ -883,7 +883,7 @@ const BookingSystem: React.FC = () => {
 																w-full h-12 rounded-xl font-medium transition-all
 																${selectedTime === time
 																	? 'bg-primary shadow-lg shadow-primary/30'
-																	: 'hover:border-primary hover:bg-primary/5'
+																	: 'hover:border-primary hover:bg-primary/50'
 																}
 															`}
 														>
@@ -923,7 +923,7 @@ const BookingSystem: React.FC = () => {
 																w-full h-12 rounded-xl font-medium transition-all
 																${selectedTime === time
 																	? 'bg-primary shadow-lg shadow-primary/30'
-																	: 'hover:border-primary hover:bg-primary/5'
+																	: 'hover:border-primary hover:bg-primary/50'
 																}
 															`}
 														>
