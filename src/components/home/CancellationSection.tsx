@@ -27,7 +27,7 @@ export const CancellationSection: React.FC = () => {
                 <div className="absolute top-1/2 left-1/3 w-24 h-24 rounded-full bg-gradient-to-r from-sky-blue-light/20 to-stormy-teal/20 blur-2xl animate-pulse delay-500" />
             </div>
 
-            <div className="container mx-auto px-6 relative z-10">
+            <div className="container mx-auto! px-6 relative z-10">
                 <div className=" mx-auto text-center">
                     {/* Section Header */}
                     <motion.div

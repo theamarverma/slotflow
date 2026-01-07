@@ -17,6 +17,7 @@ import {
 	ArrowRight,
 	Sparkles,
 	Sun,
+	CloudSun,
 	Moon,
 	AlertCircle,
 	CheckCircle2,
@@ -115,13 +116,15 @@ const BookingSystem: React.FC = () => {
 	// extracting day from selected date
 	const dayOfWeek = selectedDate ? new Date(selectedDate).getDay() : null;
 
-	// Chamber 1 slots
-	const SunToFriMorning = ['11:00', '11:30', '12:00', '12:30', '13:00'];
-	const MonToFriEvening = ['19:00', '19:30', '20:00', '20:30', '21:00'];
+	// Chamber 1 slots - More comprehensive timing
+	const morningSlots = ['09:00', '09:30', '10:00', '10:30', '11:00', '11:30'];
+	const afternoonSlots = ['14:00', '14:30', '15:00', '15:30', '16:00', '16:30'];
+	const eveningSlots = ['17:00', '17:30', '18:00', '18:30', '19:00', '19:30'];
 
-	// Chamber 2 slots
-	const monAndWedAfternoon = ['12:00', '12:30', '13:00', '13:30', '14:00', '14:30'];
-	const tueThufriSatEvening = ['17:30', '18:00', '18:30', '19:00', '19:30'];
+	// Chamber 2 slots - Different timing pattern
+	const earlyMorningSlots = ['08:00', '08:30', '09:00', '09:30'];
+	const lateAfternoonSlots = ['15:00', '15:30', '16:00', '16:30', '17:00'];
+	const nightSlots = ['20:00', '20:30', '21:00'];
 
 	const toHour = (t: string) => parseInt(t.slice(0, 2), 10);
 
@@ -129,45 +132,92 @@ const BookingSystem: React.FC = () => {
 	if (selectedLocation === '1') {
 		if (dayOfWeek === null) {
 			rawTimes = [];
-		} else if (dayOfWeek === 6) {
-			rawTimes = [];
 		} else if (dayOfWeek === 0) {
-			rawTimes = [...SunToFriMorning];
+			// Sunday - Morning and Evening only
+			rawTimes = [...morningSlots, ...eveningSlots];
+		} else if (dayOfWeek === 6) {
+			// Saturday - Morning and Afternoon only
+			rawTimes = [...morningSlots, ...afternoonSlots];
 		} else {
-			rawTimes = [...SunToFriMorning, ...MonToFriEvening];
+			// Weekdays - All slots available
+			rawTimes = [...morningSlots, ...afternoonSlots, ...eveningSlots];
 		}
 	} else if (selectedLocation === '2') {
 		if (dayOfWeek === null) {
 			rawTimes = [];
 		} else if (dayOfWeek === 0) {
+			// Sunday - Limited hours
+			rawTimes = [...earlyMorningSlots, ...lateAfternoonSlots];
+		} else if (dayOfWeek === 6) {
+			// Saturday - No night slots
+			rawTimes = [...earlyMorningSlots, ...lateAfternoonSlots];
+		} else {
+			// Weekdays - All slots available
+			rawTimes = [...earlyMorningSlots, ...lateAfternoonSlots, ...nightSlots];
+		}
+	} else if (selectedLocation === '3') {
+		if (dayOfWeek === null) {
 			rawTimes = [];
-		} else if (dayOfWeek === 1 || dayOfWeek === 3) {
-			rawTimes = [...monAndWedAfternoon];
-		} else if (dayOfWeek === 2 || dayOfWeek === 4 || dayOfWeek === 5 || dayOfWeek === 6) {
-			rawTimes = [...tueThufriSatEvening];
+		} else if (dayOfWeek === 0) {
+			// Sunday - Morning and Afternoon only
+			rawTimes = [...morningSlots, ...afternoonSlots];
+		} else if (dayOfWeek === 6) {
+			// Saturday - All slots except night
+			rawTimes = [...morningSlots, ...afternoonSlots, ...eveningSlots.slice(0, 3)];
+		} else {
+			// Weekdays - All slots available
+			rawTimes = [...morningSlots, ...afternoonSlots, ...eveningSlots];
+		}
+	} else if (selectedLocation === '4') {
+		if (dayOfWeek === null) {
+			rawTimes = [];
+		} else if (dayOfWeek === 0) {
+			// Sunday - Limited morning and afternoon
+			rawTimes = [...earlyMorningSlots.slice(0, 3), ...afternoonSlots.slice(0, 3)];
+		} else if (dayOfWeek === 6) {
+			// Saturday - Morning and evening only
+			rawTimes = [...morningSlots, ...eveningSlots];
+		} else {
+			// Weekdays - All slots available
+			rawTimes = [...earlyMorningSlots, ...afternoonSlots, ...eveningSlots, ...nightSlots];
 		}
 	}
 
 	const morningTimes = rawTimes.filter((t) => {
 		const h = toHour(t);
-		return h >= 10 && h <= 13;
+		return h >= 6 && h < 12;
+	}).sort();
+
+	const afternoonTimes = rawTimes.filter((t) => {
+		const h = toHour(t);
+		return h >= 12 && h < 17;
 	}).sort();
 
 	const eveningTimes = rawTimes.filter((t) => {
 		const h = toHour(t);
-		return h >= 17 && h <= 21;
+		return h >= 17 && h <= 23;
 	}).sort();
 
 	const locations: Location[] = [
 		{
 			id: '1',
-			name: 'College Square Branch',
-			address: '29, Shreegopal Mullick Ln, Newland, College Square',
+			name: 'Downtown Medical Center',
+			address: '123 Main Street, Suite 100, Downtown District, New York, NY 10001',
 		},
 		{
 			id: '2',
-			name: 'VIP Road Branch',
-			address: 'LOHARUKA GREEN LEAF, 3, VIP Rd',
+			name: 'Westside Dental Clinic',
+			address: '456 Oak Avenue, Building B, Westside Plaza, Los Angeles, CA 90001',
+		},
+		{
+			id: '3',
+			name: 'Northside Health Hub',
+			address: '789 Elm Street, Medical Tower, Northside Complex, Chicago, IL 60001',
+		},
+		{
+			id: '4',
+			name: 'Eastside Wellness Center',
+			address: '321 Pine Road, Wellness Park, Eastside District, Houston, TX 77001',
 		},
 	];
 
@@ -701,13 +751,13 @@ const BookingSystem: React.FC = () => {
 									</div>
 
 									<motion.div
+										key="location-list"
 										variants={containerVariants}
-										initial="hidden"
 										animate="visible"
 										className="grid gap-4"
 									>
 										{filteredLocations.map((location, index) => (
-											<motion.div key={location.id} variants={itemVariants}>
+											<motion.div key={location.id} variants={itemVariants} animate="visible">
 												<motion.button
 													whileHover={{ scale: 1.02 }}
 													whileTap={{ scale: 0.98 }}
@@ -782,7 +832,7 @@ const BookingSystem: React.FC = () => {
 												variants={containerVariants}
 												initial="hidden"
 												animate="visible"
-												className="grid grid-cols-3 md:grid-cols-5 gap-3"
+												className="grid grid-cols-3 md:grid-cols-5 mt-3! gap-3"
 											>
 												{morningTimes.map((time) => (
 													<motion.div key={`m-${time}`} variants={itemVariants}>
@@ -809,6 +859,46 @@ const BookingSystem: React.FC = () => {
 										)}
 									</div>
 
+									{/* Afternoon Slots */}
+									<div>
+										<div className="flex items-center gap-2 mb-3">
+											<div className="p-1.5 rounded-lg bg-blue-100 dark:bg-blue-900/30">
+												<CloudSun className="w-4 h-4 text-blue-600" />
+											</div>
+											<span className="font-semibold">Afternoon Slots</span>
+										</div>
+										{afternoonTimes.length > 0 ? (
+											<motion.div
+												variants={containerVariants}
+												initial="hidden"
+												animate="visible"
+												className="grid grid-cols-3 mt-3! md:grid-cols-5 gap-3"
+											>
+												{afternoonTimes.map((time) => (
+													<motion.div key={`a-${time}`} variants={itemVariants}>
+														<Button
+															variant={selectedTime === time ? 'default' : 'outline'}
+															onClick={() => handleTimeSelect(time)}
+															className={`
+																w-full h-12 rounded-xl font-medium transition-all
+																${selectedTime === time
+																	? 'bg-primary shadow-lg shadow-primary/30'
+																	: 'hover:border-primary hover:bg-primary/5'
+																}
+															`}
+														>
+															{time}
+														</Button>
+													</motion.div>
+												))}
+											</motion.div>
+										) : (
+											<p className="text-sm text-muted-foreground italic p-3 bg-muted/50 rounded-xl">
+												No afternoon slots available for this date
+											</p>
+										)}
+									</div>
+
 									{/* Evening Slots */}
 									<div>
 										<div className="flex items-center gap-2 mb-3">
@@ -822,7 +912,7 @@ const BookingSystem: React.FC = () => {
 												variants={containerVariants}
 												initial="hidden"
 												animate="visible"
-												className="grid grid-cols-3 md:grid-cols-5 gap-3"
+												className="grid grid-cols-3 mt-3! md:grid-cols-5 gap-3"
 											>
 												{eveningTimes.map((time) => (
 													<motion.div key={`e-${time}`} variants={itemVariants}>
@@ -908,10 +998,10 @@ const BookingSystem: React.FC = () => {
 										variants={containerVariants}
 										initial="hidden"
 										animate="visible"
-										className="space-y-4"
+										className="space-y-4!"
 									>
 										<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-											<motion.div variants={itemVariants} className="space-y-2">
+											<motion.div variants={itemVariants} className="space-y-2!">
 												<Label htmlFor="name" className="text-sm font-medium">
 													Full Name <span className="text-destructive">*</span>
 												</Label>
@@ -925,7 +1015,7 @@ const BookingSystem: React.FC = () => {
 													required
 												/>
 											</motion.div>
-											<motion.div variants={itemVariants} className="space-y-2">
+											<motion.div variants={itemVariants} className="space-y-2!">
 												<Label htmlFor="email" className="text-sm font-medium">
 													Email Address <span className="text-destructive">*</span>
 												</Label>
@@ -942,7 +1032,7 @@ const BookingSystem: React.FC = () => {
 										</div>
 
 										<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-											<motion.div variants={itemVariants} className="space-y-2">
+											<motion.div variants={itemVariants} className="space-y-2!">
 												<Label htmlFor="phone" className="text-sm font-medium">
 													Phone Number <span className="text-destructive">*</span>
 												</Label>
@@ -956,7 +1046,7 @@ const BookingSystem: React.FC = () => {
 													required
 												/>
 											</motion.div>
-											<motion.div variants={itemVariants} className="space-y-2">
+											<motion.div variants={itemVariants} className="space-y-2!">
 												<Label htmlFor="referredBy" className="text-sm font-medium">
 													Referred By
 												</Label>
@@ -971,7 +1061,7 @@ const BookingSystem: React.FC = () => {
 											</motion.div>
 										</div>
 
-										<motion.div variants={itemVariants} className="space-y-2">
+										<motion.div variants={itemVariants} className="space-y-2!">
 											<Label htmlFor="address" className="text-sm font-medium">
 												Address <span className="text-destructive">*</span>
 											</Label>
@@ -986,7 +1076,7 @@ const BookingSystem: React.FC = () => {
 											/>
 										</motion.div>
 
-										<motion.div variants={itemVariants} className="space-y-2">
+										<motion.div variants={itemVariants} className="space-y-2!">
 											<Label htmlFor="message" className="text-sm font-medium">
 												Message (Optional)
 											</Label>
