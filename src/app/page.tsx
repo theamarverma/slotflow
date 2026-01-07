@@ -2,12 +2,11 @@
 
 import React from 'react';
 import { motion } from 'motion/react';
-import DentalBookingSystem from './book-appointment/_components/Stepper';
-import { HeroSection } from './_components/HeroSection';
-import { FeaturesSection } from './_components/FeaturesSection';
-import { CancellationSection } from './_components/CancellationSection';
-import { Footer } from './_components/Footer';
-import BookingSystem from './book-appointment/_components/Stepper';
+import { HeroSection } from '../components/global/HeroSection';
+import { FeaturesSection } from '../components/global/FeaturesSection';
+import { CancellationSection } from '../components/home/CancellationSection';
+import { Footer } from '../components/global/Footer';
+import BookingSystem from '@/components/home/Stepper';
 
 const LandingPage = () => {
 	return (
