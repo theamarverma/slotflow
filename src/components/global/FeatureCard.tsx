@@ -36,7 +36,7 @@ export const FeatureCard: React.FC<FeatureCardProps> = ({
                 delay: index * 0.1,
                 ease: 'easeOut',
             }}
-            whileHover={{ y: -8, scale: 1.02 }}
+            // whileHover={{ y: -8, scale: 1.02 }}
             className="group relative p-4 sm:p-6 lg:p-8 bg-card rounded-2xl border-2 ${borderClass} shadow-sm hover:shadow-xl transition-all duration-300"
         >
             {/* Minimal overlay on hover */}

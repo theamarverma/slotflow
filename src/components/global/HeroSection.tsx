@@ -114,7 +114,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onBookNowClick }) => {
                         size="lg"
                         variant="shimmer"
                         onClick={scrollToBooking}
-                        className="group relative px-6 sm:px-8 py-4 sm:py-6 text-base sm:text-lg font-semibold rounded-xl w-full sm:w-auto"
+                        className="group cursor-pointer relative px-6 sm:px-8 py-4 sm:py-6 text-base sm:text-lg font-semibold rounded-xl w-full sm:w-auto"
                     >
                         <Calendar className="w-5 h-5 mr-2 group-hover:scale-110 transition-transform" />
                         Book Now
@@ -126,7 +126,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onBookNowClick }) => {
                             const featuresSection = document.getElementById('features-section');
                             featuresSection?.scrollIntoView({ behavior: 'smooth' });
                         }}
-                        className="px-6 sm:px-8 py-4 sm:py-6 text-base sm:text-lg font-semibold rounded-xl border-2 hover:bg-muted/50 hover:text-primary-custom transition-all duration-300 w-full sm:w-auto"
+                        className="px-6 cursor-pointer sm:px-8 py-4 sm:py-6 text-base sm:text-lg font-semibold rounded-xl border-2 hover:bg-muted/50 hover:text-primary-custom transition-all duration-300 w-full sm:w-auto"
                     >
                         Learn More
                     </Button>
