@@ -540,13 +540,13 @@ const BookingSystem: React.FC = () => {
 						return (
 							<React.Fragment key={stepNum}>
 								<motion.div
-									className="flex flex-col items-center"
-									whileHover={{ scale: 1.05 }}
+									className="flex flex-col items-center "
+									// whileHover={{ scale: 1.05 }}
 								>
 									<motion.div
 										className={`
 											relative w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 rounded-full flex items-center justify-center
-											font-semibold transition-all duration-300 cursor-pointer
+											font-semibold transition-all duration-300 
 											${isCompleted
 												? 'bg-gradient-to-br from-green-500 to-emerald-600 text-white shadow-lg shadow-green-500/30'
 												: isCurrent
@@ -575,7 +575,7 @@ const BookingSystem: React.FC = () => {
 											<Icon className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6" />
 										)}
 									</motion.div>
-									<div className="mt-1 sm:mt-2 text-center hidden sm:block">
+									<div className="mt-1 sm:mt-2! text-center hidden sm:block">
 										<p className={`text-xs font-medium ${isCurrent ? 'text-primary' : 'text-muted-foreground'}`}>
 											{step.label}
 										</p>
@@ -628,7 +628,7 @@ const BookingSystem: React.FC = () => {
 								<CardContent>
 									<div className="bg-muted/30 rounded-2xl p-4 md:p-6">
 										{/* Calendar Header */}
-										<div className="flex justify-between items-center mb-6">
+										<div className="flex justify-between items-center mb-6!">
 											<Button
 												variant="ghost"
 												size="icon"
@@ -651,11 +651,11 @@ const BookingSystem: React.FC = () => {
 										</div>
 
 										{/* Day Labels */}
-										<div className="grid grid-cols-7 gap-1 mb-3">
+										<div className="grid grid-cols-7 gap-1 mb-3!">
 											{['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day) => (
 												<div
 													key={day}
-													className="text-center text-xs font-semibold text-muted-foreground py-2"
+													className="text-center text-xs font-semibold text-muted-foreground py-2!"
 												>
 													{day}
 												</div>
@@ -684,15 +684,14 @@ const BookingSystem: React.FC = () => {
 																}
 															}}
 															disabled={isDisabled}
-															className={`
-																w-full h-10 md:h-12 text-sm font-medium rounded-xl transition-all duration-200
+															className={`w-full h-10 md:h-12 text-sm font-medium rounded-xl transition-all duration-200 cursor-pointer
 																${!day.isCurrentMonth ? 'text-muted-foreground/30' : ''}
 																${day.isPast ? 'text-muted-foreground/50' : ''}
 																${isSelected
 																	? 'bg-primary text-primary-foreground shadow-lg shadow-primary/30 hover:bg-primary'
 																	: day.isToday && !isSelected
 																		? 'ring-2 ring-stormy-teal bg-stormy-teal/10'
-																		: 'hover:bg-muted'
+																		: 'hover:bg-muted hover:cursor-pointer'
 																}
 															`}
 														>
@@ -708,7 +707,7 @@ const BookingSystem: React.FC = () => {
 										<motion.div
 											initial={{ opacity: 0, y: 10 }}
 											animate={{ opacity: 1, y: 0 }}
-											className="p-4 mt-4!  mx-auto bg-primary/5 rounded-xl border border-primary/20"
+											className="p-4 mt-4!  mx-auto! bg-primary/5 rounded-xl border border-primary/20"
 										>
 											<p className="text-sm text-primary font-medium flex items-center gap-2">
 												<CheckCircle2 className="w-4 h-4" />
@@ -837,11 +836,10 @@ const BookingSystem: React.FC = () => {
 														<Button
 															variant={selectedTime === time ? 'default' : 'outline'}
 															onClick={() => handleTimeSelect(time)}
-															className={`
-																w-full h-12 rounded-xl font-medium transition-all
+															className={`w-full h-12 rounded-xl font-medium transition-all cursor-pointer
 																${selectedTime === time
 																	? 'bg-primary shadow-lg shadow-primary/30'
-																	: 'hover:border-primary hover:bg-primary/50 '
+																	: 'hover:border-primary hover:bg-primary/50 hover:cursor-pointer'
 																}
 															`}
 														>
@@ -877,11 +875,10 @@ const BookingSystem: React.FC = () => {
 														<Button
 															variant={selectedTime === time ? 'default' : 'outline'}
 															onClick={() => handleTimeSelect(time)}
-															className={`
-																w-full h-12 rounded-xl font-medium transition-all
+															className={`w-full h-12 rounded-xl font-medium transition-all cursor-pointer
 																${selectedTime === time
 																	? 'bg-primary shadow-lg shadow-primary/30'
-																	: 'hover:border-primary hover:bg-primary/50'
+																	: 'hover:border-primary hover:bg-primary/50 hover:cursor-pointer'
 																}
 															`}
 														>
@@ -917,11 +914,10 @@ const BookingSystem: React.FC = () => {
 														<Button
 															variant={selectedTime === time ? 'default' : 'outline'}
 															onClick={() => handleTimeSelect(time)}
-															className={`
-																w-full h-12 rounded-xl font-medium transition-all
+															className={`w-full h-12 rounded-xl font-medium transition-all cursor-pointer
 																${selectedTime === time
 																	? 'bg-primary shadow-lg shadow-primary/30'
-																	: 'hover:border-primary hover:bg-primary/50'
+																	: 'hover:border-primary hover:bg-primary/50 hover:cursor-pointer'
 																}
 															`}
 														>
@@ -1194,7 +1190,7 @@ const BookingSystem: React.FC = () => {
 					variant="outline"
 					onClick={handleBack}
 					disabled={currentStep === 1}
-					className="h-12 px-6 rounded-xl font-medium"
+					className="h-12 px-6 rounded-xl font-medium cursor-pointer"
 				>
 					<ArrowLeft className="w-4 h-4 mr-2" />
 					Back
@@ -1205,7 +1201,7 @@ const BookingSystem: React.FC = () => {
 						variant="default"
 						onClick={handleNext}
 						disabled={!isStepValid(currentStep)}
-						className="h-12 px-8 rounded-xl font-medium"
+						className="h-12 px-8 rounded-xl font-medium cursor-pointer"
 					>
 						Next
 						<ArrowRight className="w-4 h-4 ml-2" />
@@ -1221,7 +1217,7 @@ const BookingSystem: React.FC = () => {
 							variant="secondary"
 							onClick={handleBooking}
 							disabled={isLoading}
-							className="h-12 px-8 rounded-xl font-medium"
+							className="h-12 px-8 rounded-xl font-medium cursor-pointer"
 						>
 							{isLoading ? (
 								<span className="flex items-center gap-2">
