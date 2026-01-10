@@ -896,7 +896,7 @@ const BookingSystem: React.FC = () => {
 
 									{/* Evening Slots */}
 									<div>
-										<div className="flex items-center gap-2 mb-3">
+										<div className="flex items-center gap-2 mb-3!">
 											<div className="p-1.5 rounded-lg bg-indigo-100 dark:bg-indigo-900/30">
 												<Moon className="w-4 h-4 text-indigo-600" />
 											</div>
@@ -1090,7 +1090,7 @@ const BookingSystem: React.FC = () => {
 						{/* Step 5: Review and Confirm */}
 						{currentStep === 5 && (
 							<Card className="h-full border-0 shadow-xl bg-card/80 backdrop-blur-sm overflow-auto">
-								<CardHeader className="pb-4">
+								<CardHeader className="pb-4!">
 									<CardTitle className="flex items-center gap-3 text-xl">
 										<div className="p-2 rounded-xl bg-primary/10">
 											<Check className="w-6 h-6 text-primary" />
@@ -1106,11 +1106,11 @@ const BookingSystem: React.FC = () => {
 										variants={containerVariants}
 										initial="hidden"
 										animate="visible"
-										className="space-y-6"
+										className="space-y-6!"
 									>
 										{/* Appointment Details */}
 										<motion.div variants={itemVariants}>
-											<h3 className="font-semibold mb-3 flex items-center gap-2">
+											<h3 className="font-semibold mb-3! flex items-center gap-2">
 												<Calendar className="w-4 h-4 text-primary" />
 												Appointment Details
 											</h3>
@@ -1142,11 +1142,11 @@ const BookingSystem: React.FC = () => {
 
 										{/* Personal Information */}
 										<motion.div variants={itemVariants}>
-											<h3 className="font-semibold mb-3 flex items-center gap-2">
+											<h3 className="font-semibold mb-3! flex items-center gap-2">
 												<User className="w-4 h-4 text-primary" />
 												Personal Information
 											</h3>
-											<div className="bg-muted/50 rounded-2xl p-4 space-y-3">
+											<div className="bg-muted/50 rounded-2xl p-4 space-y-3!">
 												<div className="flex justify-between items-center">
 													<span className="text-muted-foreground">Name</span>
 													<span className="font-medium">{formData.name}</span>
