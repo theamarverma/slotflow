@@ -6,8 +6,13 @@ import 'react-toastify/dist/ReactToastify.css';
 
 export const metadata: Metadata = {
 	title: 'SlotFlow',
-	description: 'Let Us Brighten Your Smile',
-	icons: [{ rel: 'icon', url: '/favicon.ico' }],
+	description: 'Schedule Your Appointment Effortlessly',
+	icons: [
+		{ rel: 'icon', url: '/favicon.svg', type: 'image/svg+xml' },
+		{ rel: 'icon', type: 'image/png', sizes: '32x32', url: '/favicon-32x32.png' },
+		{ rel: 'icon', type: 'image/png', sizes: '16x16', url: '/favicon-16x16.png' },
+		{ rel: 'apple-touch-icon', sizes: '180x180', url: '/apple-touch-icon.png' },
+	],
 };
 
 const geist = Geist({

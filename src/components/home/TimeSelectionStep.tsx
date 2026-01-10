@@ -52,7 +52,7 @@ const TimeSelectionStep: React.FC<TimeSelectionStepProps> = ({
     times: string[];
   }> = ({ title, icon: Icon, iconClassName, times }) => (
     <div>
-      <div className="flex items-center gap-2 mb-3">
+      <div className="flex items-center gap-2 mb-3!">
         <div className={`p-1.5 rounded-lg ${iconClassName}`}>
           <Icon className="w-4 h-4" />
         </div>
@@ -92,7 +92,7 @@ const TimeSelectionStep: React.FC<TimeSelectionStepProps> = ({
 
   return (
     <Card className="h-full border-0 shadow-xl bg-card/80 backdrop-blur-sm overflow-auto">
-      <CardHeader className="pb-4">
+      <CardHeader className="pb-4!">
         <CardTitle className="flex items-center gap-3 text-xl">
           <div className="p-2 rounded-xl bg-primary/10">
             <Clock className="w-6 h-6 text-primary" />
@@ -152,7 +152,7 @@ const TimeSelectionStep: React.FC<TimeSelectionStepProps> = ({
             ) : (
               <div className="p-4 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-xl">
                 <div className="flex items-start gap-3">
-                  <AlertCircle className="w-5 h-5 text-amber-600 mt-0.5" />
+                  <AlertCircle className="w-5 h-5 text-amber-600 mt-0.5!" />
                   <div>
                     <p className="font-medium text-amber-700 dark:text-amber-400">Waiting List</p>
                     <p className="text-sm text-amber-600 dark:text-amber-500">
