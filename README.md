@@ -17,6 +17,15 @@ A modern, intuitive appointment scheduling application built with Next.js 16, Re
 - **Accessibility**: WCAG compliant with keyboard navigation support
 - **Fast Performance**: Built with Next.js 16 and Turbopack for optimal speed
 
+## 📸 Screenshots
+
+### Home Page
+![Home Page](/public/images/screenshots/home.png)
+
+### Email Template
+![Appointment Email Template](/public/images/email/reminder.png)
+![Appointment Email Template](/public/images/email/confirm.png)
+
 ## 🚀 How It Works
 
 ### 1. **Hero Section**
