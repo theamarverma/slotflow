@@ -501,7 +501,7 @@ const BookingSystem: React.FC = () => {
 	};
 
 	return (
-		<div className="w-full mx-auto p-6 md:p-8 flex flex-col gap-6 bg-gradient-to-br from-background via-background to-muted/20">
+		<div className="w-full mx-auto p-4 sm:p-6 md:p-8 flex flex-col gap-4 sm:gap-6 bg-gradient-to-br from-background via-background to-muted/20">
 			{/* Header */}
 			<motion.div
 				initial={{ opacity: 0, y: -20 }}
@@ -515,10 +515,10 @@ const BookingSystem: React.FC = () => {
 					</span>
 					<Sparkles className="w-5 h-5 text-primary" />
 				</div>
-				<h1 className="text-2xl md:text-3xl font-bold text-foreground">
+				<h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-foreground">
 					Book Your Dental Appointment
 				</h1>
-				<p className="text-muted-foreground mt-1">
+				<p className="text-sm sm:text-base text-muted-foreground mt-1">
 					Complete the steps below to schedule your visit
 				</p>
 			</motion.div>
@@ -545,7 +545,7 @@ const BookingSystem: React.FC = () => {
 								>
 									<motion.div
 										className={`
-											relative w-12 h-12 md:w-14 md:h-14 rounded-full flex items-center justify-center
+											relative w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 rounded-full flex items-center justify-center
 											font-semibold transition-all duration-300 cursor-pointer
 											${isCompleted
 												? 'bg-gradient-to-br from-green-500 to-emerald-600 text-white shadow-lg shadow-green-500/30'
@@ -569,13 +569,13 @@ const BookingSystem: React.FC = () => {
 												animate={{ scale: 1, rotate: 0 }}
 												transition={{ type: 'spring', stiffness: 200 }}
 											>
-												<Check className="w-5 h-5 md:w-6 md:h-6" />
+												<Check className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6" />
 											</motion.div>
 										) : (
-											<Icon className="w-5 h-5 md:w-6 md:h-6" />
+											<Icon className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6" />
 										)}
 									</motion.div>
-									<div className="mt-2 text-center hidden md:block">
+									<div className="mt-1 sm:mt-2 text-center hidden sm:block">
 										<p className={`text-xs font-medium ${isCurrent ? 'text-primary' : 'text-muted-foreground'}`}>
 											{step.label}
 										</p>
@@ -583,7 +583,7 @@ const BookingSystem: React.FC = () => {
 								</motion.div>
 
 								{stepNum < 5 && (
-									<div className="w-8 md:w-16 h-1 mx-1 rounded-full overflow-hidden bg-muted">
+									<div className="w-4 sm:w-6 md:w-8 lg:w-16 h-1 mx-0.5 sm:mx-1 rounded-full overflow-hidden bg-muted">
 										<motion.div
 											className="h-full bg-gradient-to-r from-stormy-teal to-pacific-blue"
 											initial={{ width: '0%' }}
@@ -746,7 +746,7 @@ const BookingSystem: React.FC = () => {
 												setShowLocationDropdown(true);
 											}}
 											onFocus={() => setShowLocationDropdown(true)}
-											className="pl-12 pr-4 h-12 rounded-xl border-2 focus:border-primary"
+											className="pl-10 sm:pl-12 pr-3 sm:pr-4 h-10 sm:h-12 rounded-xl border-2 focus:border-primary"
 										/>
 									</div>
 
@@ -762,26 +762,24 @@ const BookingSystem: React.FC = () => {
 													whileHover={{ scale: 1.02 }}
 													whileTap={{ scale: 0.98 }}
 													onClick={() => handleLocationSelect(location)}
-													className={`
-														w-full p-5 rounded-2xl text-left transition-all duration-300
+													className={`w-full p-3 sm:p-4 md:p-5 rounded-2xl text-left transition-all duration-300
 														${selectedLocation === location.id
 															? 'bg-gradient-to-br from-primary to-primary/80 text-primary-foreground shadow-lg shadow-primary/30'
 															: 'bg-muted/50 hover:bg-muted border-2 border-transparent hover:border-primary/20'
 														}
 													`}
 												>
-													<div className="flex items-start gap-4">
-														<div className={`
-															p-3 rounded-xl
+													<div className="flex items-start gap-3 sm:gap-4">
+														<div className={`p-2 sm:p-3 rounded-xl
 															${selectedLocation === location.id
 																? 'bg-white/20'
 																: 'bg-primary/10'
 															}
 														`}>
-															<MapPin className={`w-6 h-6 ${selectedLocation === location.id ? 'text-white' : 'text-primary'}`} />
+															<MapPin className={`w-5 h-5 sm:w-6 sm:h-6 ${selectedLocation === location.id ? 'text-white' : 'text-primary'}`} />
 														</div>
 														<div className="flex-1">
-															<h3 className="font-semibold text-lg">{location.name}</h3>
+															<h3 className="font-semibold text-base sm:text-lg">{location.name}</h3>
 															<p className={`text-sm mt-1 ${selectedLocation === location.id ? 'text-white/80' : 'text-muted-foreground'}`}>
 																{location.address}
 															</p>

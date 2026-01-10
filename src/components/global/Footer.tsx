@@ -3,13 +3,15 @@
 import React from 'react';
 import { motion } from 'motion/react';
 import { Heart, Github } from 'lucide-react';
+import { Logo } from './Logo';
+import { TextLogo } from './TextLogo';
 
 export const Footer: React.FC = () => {
     const currentYear = new Date().getFullYear();
 
     return (
         <footer className="bg-gradient-to-b from-background to-muted/30 border-t border-border/30">
-            <div className="container mx-auto! px-6 py-8">
+            <div className="container mx-auto! px-4 sm:px-6 py-6 sm:py-8">
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
@@ -17,6 +19,20 @@ export const Footer: React.FC = () => {
                     transition={{ duration: 0.5 }}
                     className="flex flex-col items-center justify-center text-center"
                 >
+                    {/* Logo in Footer */}
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        whileInView={{ opacity: 1, scale: 1 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.5, delay: 0.1 }}
+                        className="mb-6"
+                    >
+                        <div className="flex items-center gap-2 mb-2">
+                            <Logo size="sm" />
+                            <TextLogo size="sm" />
+                        </div>
+                    </motion.div>
+
                     <div className="flex items-center gap-2 text-muted-foreground mb-2">
                         <span>Made with</span>
                         <Heart className="w-4 h-4 text-red-500 fill-red-500 animate-pulse" />

@@ -22,7 +22,7 @@ const LandingPage = () => {
 				id="booking-section"
 				className="py-20 md:py-28 bg-gradient-to-b from-background via-muted/20 to-background"
 			>
-				<div className=" mx-auto flex flex-col w-full items-center px-6">
+				<div className=" mx-auto flex flex-col w-full items-center px-4 sm:px-6">
 					{/* Section Header */}
 					<motion.div
 						initial={{ opacity: 0, y: 30 }}
@@ -46,7 +46,7 @@ const LandingPage = () => {
 						whileInView={{ opacity: 1, y: 0 }}
 						viewport={{ once: true, margin: '-100px' }}
 						transition={{ duration: 0.8, delay: 0.2 }}
-						className="w-full max-w-7xl mx-auto"
+						className="w-full max-w-4xl lg:max-w-7xl mx-auto"
 					>
 						<div className="w-full bg-card rounded-3xl shadow-xl border border-border/50 overflow-hidden">
 							<BookingSystem />

@@ -4,6 +4,8 @@ import React from 'react';
 import { motion } from 'motion/react';
 import { Button } from '@/components/ui/button';
 import { Calendar, Sparkles } from 'lucide-react';
+import { Logo } from './Logo';
+import { TextLogo } from './TextLogo';
 
 interface HeroSectionProps {
     onBookNowClick?: () => void;
@@ -50,16 +52,27 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onBookNowClick }) => {
             />
 
             {/* Content */}
-            <div className="relative z-10 flex flex-col gap-4 container mx-auto px-6 text-center">
+            <div className="relative z-10 flex flex-col gap-4 container mx-auto px-4 sm:px-6 text-center">
+                {/* Logo Section */}
+                <motion.div
+                    initial={{ opacity: 0, y: -30 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.8, ease: 'easeOut' }}
+                    className="flex flex-col items-center justify-center mb-8"
+                >
+                    <Logo size="xl" className="mb-4" />
+                    <TextLogo size="lg" showTagline={true} />
+                </motion.div>
+
                 <motion.div
                     initial={{ opacity: 0, y: 30 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.8, ease: 'easeOut' }}
+                    transition={{ duration: 0.8, delay: 0.4, ease: 'easeOut' }}
                     className="flex items-center justify-center gap-2 mb-6"
                 >
                     <Sparkles className="w-5 h-5 text-stormy-teal" />
                     <span className="text-sm font-medium text-stormy-teal uppercase tracking-wider">
-                        Scheduling, simplified
+                        Easy Online Booking
                     </span>
                     <Sparkles className="w-5 h-5 text-stormy-teal" />
                 </motion.div>
@@ -68,7 +81,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onBookNowClick }) => {
                     initial={{ opacity: 0, y: 40 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.8, delay: 0.1, ease: 'easeOut' }}
-                    className="text-5xl md:text-7xl font-bold text-stormy-teal mb-4"
+                    className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-stormy-teal mb-4"
                 >
                     Schedule Your
                 </motion.h1>
@@ -76,7 +89,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onBookNowClick }) => {
                     initial={{ opacity: 0, y: 40 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.8, delay: 0.2, ease: 'easeOut' }}
-                    className="text-4xl md:text-6xl font-bold text-pacific-blue mb-8"
+                    className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-pacific-blue mb-8"
                 >
                     Appointment Effortlessly
                 </motion.h1>
@@ -85,7 +98,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onBookNowClick }) => {
                     initial={{ opacity: 0, y: 30 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.8, delay: 0.3, ease: 'easeOut' }}
-                    className="text-lg md:text-xl text-muted-foreground  mx-auto mb-10"
+                    className="text-base sm:text-lg md:text-xl text-muted-foreground  mx-auto mb-8 sm:mb-10"
                 >
                     Quick and easy scheduling in just a few steps. Choose your preferred
                     location, date, and time for a appointment.
@@ -95,13 +108,13 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onBookNowClick }) => {
                     initial={{ opacity: 0, y: 30 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.8, delay: 0.4, ease: 'easeOut' }}
-                    className="flex flex-col sm:flex-row gap-4 justify-center items-center"
+                    className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center px-4"
                 >
                     <Button
                         size="lg"
                         variant="shimmer"
                         onClick={scrollToBooking}
-                        className="group relative px-8 py-6 text-lg font-semibold rounded-xl"
+                        className="group relative px-6 sm:px-8 py-4 sm:py-6 text-base sm:text-lg font-semibold rounded-xl w-full sm:w-auto"
                     >
                         <Calendar className="w-5 h-5 mr-2 group-hover:scale-110 transition-transform" />
                         Book Now
@@ -113,7 +126,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onBookNowClick }) => {
                             const featuresSection = document.getElementById('features-section');
                             featuresSection?.scrollIntoView({ behavior: 'smooth' });
                         }}
-                        className="px-8 py-6 text-lg font-semibold rounded-xl border-2 hover:bg-muted/50 hover:text-primary-custom transition-all duration-300"
+                        className="px-6 sm:px-8 py-4 sm:py-6 text-base sm:text-lg font-semibold rounded-xl border-2 hover:bg-muted/50 hover:text-primary-custom transition-all duration-300 w-full sm:w-auto"
                     >
                         Learn More
                     </Button>
@@ -124,7 +137,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onBookNowClick }) => {
                     initial={{ opacity: 0, y: 30 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.8, delay: 0.6, ease: 'easeOut' }}
-                    className="mt-16 grid grid-cols-2 md:grid-cols-4 pt-4 mx-auto"
+                    className="mt-12 sm:mt-16 grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 md:gap-8 pt-4 mx-auto"
                 >
                     {[
                         { value: '2', label: 'Locations' },
@@ -139,10 +152,10 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onBookNowClick }) => {
                             transition={{ duration: 0.5, delay: 0.7 + index * 0.1 }}
                             className="text-center"
                         >
-                            <div className="text-3xl md:text-4xl font-bold text-primary">
+                            <div className="text-2xl sm:text-3xl md:text-4xl font-bold text-primary">
                                 {stat.value}
                             </div>
-                            <div className="text-sm text-muted-foreground mt-1">
+                            <div className="text-xs sm:text-sm text-muted-foreground mt-1">
                                 {stat.label}
                             </div>
                         </motion.div>

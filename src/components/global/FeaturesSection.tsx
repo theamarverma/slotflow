@@ -57,19 +57,19 @@ export const FeaturesSection: React.FC = () => {
             id="features-section"
             className="py-20 md:py-28 bg-gradient-to-b from-background to-muted/30"
         >
-            <div className="container mx-auto! flex flex-col gap-10 px-6">
+            <div className="container mx-auto! flex flex-col gap-8 sm:gap-10 px-4 sm:px-6">
                 {/* Section Header */}
                 <motion.div
                     initial={{ opacity: 0, y: 30 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
                     transition={{ duration: 0.6 }}
-                    className="text-center mb-16"
+                    className="text-center mb-8 sm:mb-12 md:mb-16"
                 >
                     <span className="inline-block px-4 py-2 bg-primary/10 text-primary text-sm font-medium rounded-full mb-4">
                         Why Choose Us
                     </span>
-                    <h2 className="text-3xl md:text-5xl font-bold pt-8 text-foreground mb-4">
+                    <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold pt-6 sm:pt-8 text-foreground mb-4">
                         Everything You Need for
                         <br />
                         <span className="text-stormy-teal">
@@ -77,14 +77,14 @@ export const FeaturesSection: React.FC = () => {
                             Hassle-Free Booking
                         </span>
                     </h2>
-                    <p className="text-lg text-muted-foreground  mx-auto">
+                    <p className="text-base sm:text-lg text-muted-foreground  mx-auto">
                         We've designed our booking system to make scheduling your dental
                         appointment as simple and stress-free as possible.
                     </p>
                 </motion.div>
 
                 {/* Features Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8">
                     {features.map((feature, index) => (
                         <FeatureCard
                             key={feature.title}
