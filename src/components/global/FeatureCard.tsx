@@ -45,7 +45,7 @@ export const FeatureCard: React.FC<FeatureCardProps> = ({
             <div className="relative z-10">
                 {/* Icon */}
                 <motion.div
-                    className={`w-12 h-12 sm:w-14 sm:h-16 lg:w-16 lg:h-16 rounded-xl ${bgClass} flex items-center justify-center mb-4 sm:mb-5 lg:mb-6 group-hover:scale-110 transition-transform duration-300`}
+                    className={`w-12 h-12 sm:w-14 sm:h-16 lg:w-16 lg:h-16 rounded-xl ${bgClass} flex items-center justify-center mb-4 sm:mb-5 lg:mb-6  transition-transform duration-300`}
                 >
                     <Icon className={`w-6 h-6 sm:w-7 sm:h-7 lg:w-8 lg:h-8 ${textClass}`} />
                 </motion.div>
