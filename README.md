@@ -54,7 +54,7 @@ Step 1: Pick Date → Step 2: Choose Location → Step 3: Pick Time → Step 4: 
 - **Frontend**: Next.js 16.1.1, React 19, TypeScript
 - **Styling**: Tailwind CSS 4.1, Custom design system
 - **Animations**: Framer Motion (motion/react)
-- **UI Components**: Radix UI, Lucide Icons
+- **UI Components**: Shadcn UI, Lucide Icons
 - **Form Handling**: React Hook Form, Zod validation
 - **Package Manager**: pnpm
 
